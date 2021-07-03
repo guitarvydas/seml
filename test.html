@@ -9,10 +9,11 @@ textarea {
 <body>
 
 
-<h1>Glue IDE</h1>
+<h1>Solution Centric Notations (SCN)</h1>
 
+<br>
 <label for="grammar">grammar:</label>
-<textarea id="grammar" name="a" rows="10" cols="40" placeholder="grammar" style="background-color:oldlace;">
+<textarea id="grammar" name="a" rows="10" cols="70" placeholder="grammar" style="background-color:oldlace;">
 Arithmetic {
   /* Python code emitter */
   
@@ -51,8 +52,61 @@ Arithmetic {
 }
 </textarea>
 
+<!-- <br> -->
+<!-- <label for="pythonsemantics">python semantics:</label> -->
+<!-- <textarea id="pythonsemantics" rows="10" cols="70" placeholder="semantics" style="background-color:oldlace;"> -->
+
+<!--   Top [e] = [[ -->
+<!--     print(${e}); -->
+<!--     ]] -->
+<!--   Exp [e] = [[${e}]] -->
+<!--   AddExp_plus [e1 op e2] = [[${e1}+${e2}]] -->
+<!--   AddExp_minus [e1 op e2] = [[${e1}-${e2}]] -->
+<!--   AddExp [e] = [[${e}]] -->
+<!--   MulExp_times [e1 op e2] = [[${e1}*${e2}]] -->
+<!--   MulExp_divide [e1 op e2] = [[${e1}/${e2}]] -->
+<!--   MulExp [e] = [[${e}]] -->
+<!--   ExpExp_power[p op e] = [[${p}^${e}]] -->
+<!--   ExpExp [p] = [[${p}]] -->
+<!--   PriExp_paren [lp p rp] = [[(${p})]] -->
+<!--   PriExp_pos [sign p] = [[+${p}]] -->
+<!--   PriExp_neg [sign p] = [[-${p}]] -->
+<!--   PriExp [p] = [[${p}]] -->
+<!--   ident [l @a] = [[${l}${a}]] -->
+<!--   number_fract [@numerator dot @denominator] = [[${numerator}.${denominator}]] -->
+<!--   number_whole [@n] = [[${n}]] -->
+<!-- </textarea> -->
+<!-- <br> -->
+<!-- <label for="wasmsemantics">wasm semantics:</label> -->
+<!-- <textarea id="wasmsemantics" rows="10" cols="70" placeholder="semantics" style="background-color:oldlace;"> -->
+<!--   Top [e] =  -->
+<!--   [[ -->
+<!-- (module -->
+<!--   (func $custom (param $x f64) (param $y f64) (result f64) -->
+<!-- ${e}) -->
+<!--   (export "custom" (func $custom)) -->
+<!-- ) -->
+<!--     ]] -->
+<!--   Exp [e] = [[${e}]] -->
+<!--   AddExp_plus [e1 op e2] = [[${e1}\n${e2}\nf64.add\n]] -->
+<!--   AddExp_minus [e1 op e2] = [[${e1}\n${e2}\nf64.sub\n]] -->
+<!--   AddExp [e] = [[${e}]] -->
+<!--   MulExp_times [e1 op e2] = [[${e1}\n${e2}\nf64.mul\n]] -->
+<!--   MulExp_divide [e1 op e2] = [[${e1}\n${e2}\nf64.div\n]] -->
+<!--   MulExp [e] = [[${e}]] -->
+<!--   ExpExp_power[p op e] = [[(???exp ${p} ${e})]] -->
+<!--   ExpExp [p] = [[${p}]] -->
+<!--   PriExp_paren [lp p rp] = [[${p}]] -->
+<!--   PriExp_pos [sign p] = [[${p}]] -->
+<!--   PriExp_neg [sign p] = [[${p}\nf64.neg]] -->
+<!--   PriExp [p] = [[${p}]] -->
+<!--   ident [l @a] = [[local.get \$${l}${a}]] -->
+<!--   number_fract [@numerator dot @denominator] = [[f64.const ${numerator}.${denominator}]] -->
+<!--   number_whole [@n] = [[f64.const ${n}]] -->
+<!-- </textarea> -->
+<!-- <br> -->
 <label for="semantics">semantics:</label>
-<textarea id="semantics" name="semantcs" rows="10" cols="40" placeholder="semantics" style="background-color:oldlace;">
+<textarea id="semantics" rows="10" cols="70" placeholder="semantics" style="background-color:oldlace;">
 
   Top [e] = [[
     print(${e});
@@ -75,25 +129,26 @@ Arithmetic {
   number_whole [@n] = [[${n}]]
 </textarea>
 
-<label for="generatedSemantics">generated semantics:</label>
-<textarea id="generatedSemantics" name="generatedSemantics" rows="10" cols="40" placeholder="Generated JS code" readonly style="background-color:whitesmoke;">
-</textarea>
+<!-- <br> -->
+<!-- <label for="generatedSemantics">generated semantics:</label> -->
+<!-- <textarea id="generatedSemantics" name="generatedSemantics" rows="10" cols="70" placeholder="Generated JS code" readonly style="background-color:whitesmoke;"> -->
+<!-- </textarea> -->
 
 <br>
 <label for="source">source</label>
-<textarea id="source" name="source" rows="10" cols="40" placeholder="notation test" style="background-color:oldlace;">
+<textarea id="source" name="source" rows="10" cols="70" placeholder="notation test" style="background-color:oldlace;">
 2+3
 </textarea>
 
 <label for="transpiled">transpiled</label>
-<textarea id="transpiled" name="transpiled" rows="10" cols="40" placeholder="transpiled"  readonly style="background-color:whitesmoke;">
+<textarea id="transpiled" name="transpiled" rows="10" cols="70" placeholder="transpiled"  readonly style="background-color:whitesmoke;">
 </textarea>
 <br>
 <br>
 <p id="status" > READY </p>
 <!-- </textarea> -->
 <!-- <label for="status">status</label> -->
-<!-- <textarea id="status" name="status" rows="10" cols="40" placeholder="status"> -->
+<!-- <textarea id="status" name="status" rows="10" cols="70" placeholder="status"> -->
 <!-- </textarea> -->
 
 <!-- see https://stackoverflow.com/questions/1880198/how-to-execute-shell-command-in-javascript -->
@@ -116,7 +171,7 @@ function compile_and_run(text){
       let scnGrammar = document.getElementById('grammar').value;
       let semantics = document.getElementById('semantics').value;
       let generatedSCNSemantics = transpiler (semantics, glueGrammar, "_glue", glueSemantics);
-      document.getElementById('generatedSemantics').value = generatedSCNSemantics;
+      // document.getElementById('generatedSemantics').value = generatedSCNSemantics;
 
       _ruleInit();
       try {
