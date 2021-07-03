@@ -52,8 +52,8 @@ function ohm_parse (grammar, text) {
     if (cst.succeeded ()) {
 	return { parser: parser, cst: cst };
     } else {
-	process.stderr.write (cst.message + '\n');
-	process.exit (1);
+	// process.stderr.write (cst.message + '\n');
+	// process.exit (1);
 	//console.log (parser.trace (text).toString ());
 	throw "glue: Ohm matching failed";
     }
@@ -138,7 +138,7 @@ return _result;
 	    if (0 === code.length) {
   		return __3;
 	    } else {
-		process.stderr.write ('code is NOT empty\n');
+//		process.stderr.write ('code is NOT empty\n');
   		return `${code}${__3}`;
 	    }
 	},
@@ -233,12 +233,7 @@ function _ruleExit (ruleName) {
 _ruleInit ();
 `;
 
-function getTextFromField (field) {
-    return  document.getElementById(field).innerHTML;
-}
-
-function generateGlue () {
-    var text = getTextFromField ('glueSource');
+function generateGlue (text) {
     var { parser, cst } = ohm_parse (grammar, text);
     var sem = {};
     var outputString = "";

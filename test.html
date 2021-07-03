@@ -88,75 +88,6 @@ AsynchronousSoftwareComponents {
 <textarea id="glueSource" name="glueSource" rows="10" cols="80">
 program[@ws @command] = [[${ws}${command}]]
 command[n @wsnl] = [[${n}${wsnl}]]
-
-newASC[k @ws ascID] = [[${k}${ws}${ascID}]]
-input[k @ws ascID @ws2 iportID] = [[${k}${ws}${ascID}${ws2}${iportID}]]
-output[k @ws ascID @ws2 oportID] = [[${k}${ws}${ascID}${ws2}${oportID}]]
-text[k @ws ascID @ws2 textID @ws3 string] = [[${k}${ws}${ascID}${ws2}${textID}${ws3}${string}]]
-connection[k @ws ascID @ws2 connectionID @ws3 onClause] = [[${k}${ws}${ascID}${ws2}${connectionID}${ws3}${onClause}]]
-contains[k @ws ascID @ws2 childID @ws3 containedASC] = [[${k}${ws}${ascID}${ws2}${childID}${ws3}${containedASC}]]
-
-containedASC[cloneClause] = [[${cloneClause}]]
-cloneClause[k @ws ascID] = [[${k}${ws}${ascID}]]
-
-onClause[k @ws portID @ws2 actionClause] = [[${k}${ws}${portID}${ws2}${actionClause}]]
-actionClause[lp @ws @action rp] = [[${lp}${ws}${action}${rp}]]
-action[k callAction @ws] = [[${k}${callAction}${ws}]]
-callAction[k @ws codeID] = [[${k}${ws}${codeID}]]
-sendAction[k @ws direction @ws2 where @ws3 what] = [[${k}${ws}${direction}${ws2}${where}${ws3}${what}]]
-
-ascID[rID] = [[${rID}]]
-childID[rID] = [[${rID}]]
-portID[iportID] = [[${iportID}]]
-iportID[rID] = [[${rID}]]
-oportID[rID] = [[${rID}]]
-connectionID[rID] = [[${rID}]]
-textID[rID] = [[${rID}]]
-codeID[rID] = [[${rID}]]
-
-direction[k] = [[${k}]]
-where[oportID] = [[${oportID}]]
-what[k] = [[${k}]]
-mwhat [k] = [[${k}]]
-toswhat [k] = [[${k}]]
-
-
-keyword[k wsla] = [[${k}]]
-
-
-rID[  path k ns k2 identInNS] = [[${path}${k}${ns}${k2}${identInNS}]]
-path[path3210] = [[${path3210}]]
-path0 [id la] = [[${id}]]
-path1 [id k k1 k2 p] = [[${id}${k}${k1}${k2}${p}]]
-path2 [id k k1 k2 p] = [[${id}${k}${k1}${k2}${p}]]
-path3 [id k k1 k2 p] = [[${id}${k}${k1}${k2}${p}]]
-root[dot] = [[${dot}]]
-identInNS[alphaIdent] = [[${alphaIdent}]]
-alphaIdent[absoluteIdent] = [[${absoluteIdent}]]
-numIdent[index] = [[${index}]]
-ns[k la] = [[${k}}]]
-
-absoluteIdent[identFirst @identRest] = [[${identFirst}${identRest}]]
-identFirst[c] = [[${c}]]
-identRest[c] = [[${c}]]
-on[k @ws] = [[${k}${ws}]]
-lb[k @ws] = [[${k}${ws}]]
-rb[k @ws] = [[${k}${ws}]]
-
-at[k @ws] = [[${k}${ws}]]
-index[@dig] = [[${dig}]]
-dig[c] = [[${c}]]
-
-wsnl[ws] = [[${ws}]]
-ws[c] = [[${c}]]
-newline[k] = [[${k}]]
-
-string[dq @notDQ dq @ws] = [[${dq}${notDQ}${dq}${ws}]]
-dq[c] = [[${c}]]
-notDQ[any] = [[${any}]]
-
-
-
   </textarea>
 
 <textarea id="c" name="c" rows="10" cols="80">
@@ -188,7 +119,13 @@ connection hw123/c/hwapp hw123/c/hwapp/x/2 on hw123/c/hwapp/c/inner/o/out (@send
 
   </textarea>
 
+
+<label for="d">JS Code:</label>
 <textarea id="d" name="d" rows="10" cols="80">
+  PT d w3schools.com you will learn how to make a website. They offer free tutorials in all web development technologies.
+</textarea>
+
+<textarea id="glueSourceReceived" name="glueSourceReceived" rows="10" cols="80">
   PT d w3schools.com you will learn how to make a website. They offer free tutorials in all web development technologies.
 </textarea>
 
@@ -201,11 +138,13 @@ connection hw123/c/hwapp hw123/c/hwapp/x/2 on hw123/c/hwapp/c/inner/o/out (@send
       // var shell = require('shelljs');
       // shell.echo('shelljs hello');
       // let str = exec('echo hello').stdout;
-
-      let glueCode = generateGlue ();
+      let text = document.getElementById('glueSource').value;
+      console.log(text);
+      document.getElementById('glueSourceReceived').value = text;
+      let glueCode = generateGlue(text);
       //let str = "pt was here";
       //document.getElementById('d').innerHTML = "str: /" + str + "/";
-      document.getElementById('d').innerHTML = glueCode;
+      document.getElementById('d').value = glueCode;
   }
   </script>
 </body>
