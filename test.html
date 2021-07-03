@@ -9,142 +9,129 @@ textarea {
 <body>
 
 
-<h1>ASC Identity</h1>
+<h1>Glue IDE</h1>
 
-<textarea id="a" name="a" rows="10" cols="80">
-AsynchronousSoftwareComponents {
-  program = ws* command+
-  command = (newASC | input | output | text | connection | contains) wsnl+
+<label for="grammar">grammar:</label>
+<textarea id="grammar" name="a" rows="10" cols="40" placeholder="grammar" style="background-color:oldlace;">
+Arithmetic {
+  /* Python code emitter */
   
-  newASC = "asc" ws+ ascID
-  input = "input" ws+ ascID ws+ iportID
-  output = "output" ws+ ascID ws+ oportID
-  text = "text" ws+ ascID ws+ textID ws+ string
-  connection = "connection" ws+ ascID ws+ connectionID ws+ onClause
-  contains = "contains" ws+ ascID ws+ childID ws+ containedASC
+  Top = Exp
+  
+  Exp
+    = AddExp
 
-  containedASC = cloneClause | ascID
-  cloneClause = "clone" ws+ ascID
+  AddExp
+    = AddExp "+" MulExp  -- plus
+    | AddExp "-" MulExp  -- minus
+    | MulExp
 
-  onClause = "on" ws+ portID ws+ actionClause
-  actionClause = "(" ws* action+ ")"
-  action = "@" (callAction | sendAction) ws*
-  callAction = "call" ws+ codeID
-  sendAction = "send" ws+ direction ws+ where ws+ what
+  MulExp
+    = MulExp "*" ExpExp  -- times
+    | MulExp "/" ExpExp  -- divide
+    | ExpExp
 
-    ascID = rID | absoluteIdent
-    childID = rID
-    portID = iportID | oportID
-    iportID = rID
-    oportID = rID
-    connectionID = rID
-    textID = rID
-    codeID = rID
+  ExpExp
+    = PriExp "^" ExpExp  -- power
+    | PriExp
 
-    direction = "upward" | "downward"
-    where = oportID
-    what = mwhat | toswhat
-    mwhat = "m"
-    toswhat = "tos"
+  PriExp
+    = "(" Exp ")"  -- paren
+    | "+" PriExp   -- pos
+    | "-" PriExp   -- neg
+    | ident
+    | number
 
-    keyword = ("asc" | "input" | "output" | "text" | "connection" | "contains" | "clone" | "on" | "call" | "send" | "upward" | "downward" | "m" | "tos") &ws
+  ident  (an identifier)
+    = letter alnum*
 
-
-    rID =   path "/" ns "/" identInNS
-    path = path3 | path2 | path1 | path0
-    path0 = absoluteIdent &"/"
-    path1 = absoluteIdent "/" "c" "/" path0
-    path2 = absoluteIdent "/" "c" "/" path1
-    path3 = absoluteIdent "/" "c" "/" path2
-    root = "."
-    identInNS = alphaIdent | numIdent
-    alphaIdent = absoluteIdent
-    numIdent = index
-    ns = ("i" | "o" | "x" | "n" | "c") & "/"
-
-    absoluteIdent = ~keyword ~ns identFirst identRest*
-    identFirst = "_" | "A" .. "Z" | "a" .. "z"
-    identRest = "0" .. "9" | identFirst
-    on = "on" ws+
-    lb = "{" ws*
-    rb = "}" ws*
-
-    at = "@" ws* 
-    index = dig+
-    dig = "0" .. "9"
-
-    wsnl = ws | newline
-    ws = " " | "\t"
-    newline = "\n"
-
-	string = dq notDQ* dq ws*
-	dq = "\""
-	notDQ = ~dq ~newline any
+  number  (a number)
+    = digit* "." digit+  -- fract
+    | digit+             -- whole
 }
-
-
-
-  </textarea>
-<textarea id="glueSource" name="glueSource" rows="10" cols="80">
-program[@ws @command] = [[${ws}${command}]]
-command[n @wsnl] = [[${n}${wsnl}]]
-  </textarea>
-
-<textarea id="c" name="c" rows="10" cols="80">
-asc hw123/c/hwapp/c/hwsub/c/hwhello
-input hw123/c/hwapp/c/hwsub/c/hwhello hw123/c/hwapp/c/hwsub/c/hwhello/i/in
-output hw123/c/hwapp/c/hwsub/c/hwhello hw123/c/hwapp/c/hwsub/c/hwhello/o/out
-text hw123/c/hwapp/c/hwsub/c/hwhello hw123/c/hwapp/c/hwsub/c/hwhello/n/code "hello"
-connection hw123/c/hwapp/c/hwsub/c/hwhello hw123/c/hwapp/c/hwsub/c/hwhello/x/1 on hw123/c/hwapp/c/hwsub/c/hwhello/i/in (@call hw123/c/hwapp/c/hwsub/c/hwhello/n/code @send upward hw123/c/hwapp/c/hwsub/c/hwhello/o/out tos)
-asc hw123/c/hwapp/c/hwsub/c/_nonamekind
-input hw123/c/hwapp/c/hwsub/c/_nonamekind hw123/c/hwapp/c/hwsub/c/_nonamekind/i/C
-output hw123/c/hwapp/c/hwsub/c/_nonamekind hw123/c/hwapp/c/hwsub/c/_nonamekind/o/D
-
-asc hw123/c/hwapp/c/hwsub
-input hw123/c/hwapp/c/hwsub hw123/c/hwapp/c/hwsub/i/A
-output hw123/c/hwapp/c/hwsub hw123/c/hwapp/c/hwsub/o/B
-contains hw123/c/hwapp/c/hwsub hsub/c/hole clone hw123/c/hwapp/c/hwsub/c/_nonamekind
-connection hw123/c/hwapp/c/hwsub hw123/c/hwapp/c/hwsub/x/1 on hw123/c/hwapp/c/hwsub/i/in (@send downward hw123/c/hwapp/c/hwsub/c/hole/i/C m)
-connection hw123/c/hwapp/c/hwsub hw123/c/hwapp/c/hwsub/x/2 on hw123/c/hwapp/c/hwsub/c/hole/o/D (@send upward hw123/c/hwapp/c/hwsub/o/B m)
-asc hw123/c/hwapp/c/_nonamekind
-input hw123/c/hwapp/c/_nonamekind hw123/c/hwapp/c/_nonamekind/i/in
-output hw123/c/hwapp/c/_nonamekind hw123/c/hwapp/c/_nonamekind/o/out
-
-asc hw123/c/hwapp
-input hw123/c/hwapp hw123/c/hwapp/i/in
-output hw123/c/hwapp hw123/c/hwapp/o/out
-contains hw123/c/hwapp hw123/c/hwapp/c/inner clone hw123/c/hwapp/c/_nonamekind
-connection hw123/c/hwapp hw123/c/hwapp/x/1 on hw123/c/hwapp/i/in (@send downward hw123/c/hwapp/c/inner/i/in m)
-connection hw123/c/hwapp hw123/c/hwapp/x/2 on hw123/c/hwapp/c/inner/o/out (@send upward hw123/c/hwapp/o/out m)
-
-  </textarea>
-
-
-<label for="d">JS Code:</label>
-<textarea id="d" name="d" rows="10" cols="80">
-  PT d w3schools.com you will learn how to make a website. They offer free tutorials in all web development technologies.
 </textarea>
 
-<textarea id="glueSourceReceived" name="glueSourceReceived" rows="10" cols="80">
-  PT d w3schools.com you will learn how to make a website. They offer free tutorials in all web development technologies.
+<label for="semantics">semantics:</label>
+<textarea id="semantics" name="semantcs" rows="10" cols="40" placeholder="semantics" style="background-color:oldlace;">
+
+  Top [e] = [[
+    print(${e});
+    ]]
+  Exp [e] = [[${e}]]
+  AddExp_plus [e1 op e2] = [[${e1}+${e2}]]
+  AddExp_minus [e1 op e2] = [[${e1}-${e2}]]
+  AddExp [e] = [[${e}]]
+  MulExp_times [e1 op e2] = [[${e1}*${e2}]]
+  MulExp_divide [e1 op e2] = [[${e1}/${e2}]]
+  MulExp [e] = [[${e}]]
+  ExpExp_power[p op e] = [[${p}^${e}]]
+  ExpExp [p] = [[${p}]]
+  PriExp_paren [lp p rp] = [[(${p})]]
+  PriExp_pos [sign p] = [[+${p}]]
+  PriExp_neg [sign p] = [[-${p}]]
+  PriExp [p] = [[${p}]]
+  ident [l @a] = [[${l}${a}]]
+  number_fract [@numerator dot @denominator] = [[${numerator}.${denominator}]]
+  number_whole [@n] = [[${n}]]
 </textarea>
+
+<label for="generatedSemantics">generated semantics:</label>
+<textarea id="generatedSemantics" name="generatedSemantics" rows="10" cols="40" placeholder="Generated JS code" readonly style="background-color:whitesmoke;">
+</textarea>
+
+<br>
+<label for="source">source</label>
+<textarea id="source" name="source" rows="10" cols="40" placeholder="notation test" style="background-color:oldlace;">
+2+3
+</textarea>
+
+<label for="transpiled">transpiled</label>
+<textarea id="transpiled" name="transpiled" rows="10" cols="40" placeholder="transpiled"  readonly style="background-color:whitesmoke;">
+</textarea>
+<br>
+<br>
+<p id="status" > READY </p>
+<!-- </textarea> -->
+<!-- <label for="status">status</label> -->
+<!-- <textarea id="status" name="status" rows="10" cols="40" placeholder="status"> -->
+<!-- </textarea> -->
 
 <!-- see https://stackoverflow.com/questions/1880198/how-to-execute-shell-command-in-javascript -->
+<br>
 <button onclick="generate ()">Generate</button>
 <script src="ohm.js"></script>
 <script src="glue.js"></script>
+<script src="scope.js"></script>
+<script id='generated'></script>
 <script>
+
+function compile_and_run(text){
+    console.log(text);
+    //return eval('"use strict"; ' + text );
+    return eval('' + text + '"OK"');
+}
+
   function generate () {
-      // var shell = require('shelljs');
-      // shell.echo('shelljs hello');
-      // let str = exec('echo hello').stdout;
-      let text = document.getElementById('glueSource').value;
-      console.log(text);
-      document.getElementById('glueSourceReceived').value = text;
-      let glueCode = generateGlue(text);
-      //let str = "pt was here";
-      //document.getElementById('d').innerHTML = "str: /" + str + "/";
-      document.getElementById('d').value = glueCode;
+      let notationSource = document.getElementById('source').value;
+      let scnGrammar = document.getElementById('grammar').value;
+      let semantics = document.getElementById('semantics').value;
+      let generatedSCNSemantics = transpiler (semantics, glueGrammar, "_glue", glueSemantics);
+      document.getElementById('generatedSemantics').value = generatedSCNSemantics;
+
+      _ruleInit();
+      try {
+	  document.getElementById('status').innerHTML = "FAILED";
+	  //document.getElementById("transpiled").value = '{"a":"1","b":"2"}';
+	  //document.getElementById ("transpiled").value = eval('({ Top_level : function xyz (_e) { _ruleEnter ("Top_level");	var e = _e._glue (); var _result = `${e}`; _ruleExit ("Top_level"); return _result; }})');
+	  let semObject = eval('(' + generatedSCNSemantics + ')');
+	  document.getElementById ("transpiled").value = semObject;
+	  let tr = transpiler(notationSource, scnGrammar, "_glue", semObject);
+	  document.getElementById('transpiled').value = tr;
+	  document.getElementById('status').innerHTML = "OK";
+      }
+       catch (err) {
+	  document.getElementById('status').innerHTML = err;
+       }	   
   }
   </script>
 </body>
