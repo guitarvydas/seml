@@ -52,87 +52,29 @@ Arithmetic {
 }
 </textarea>
 
-<!-- <br> -->
-<!-- <label for="pythonsemantics">python semantics:</label> -->
-<!-- <textarea id="pythonsemantics" rows="10" cols="70" placeholder="semantics" style="background-color:oldlace;"> -->
-
-<!--   Top [e] = [[ -->
-<!--     print(${e}); -->
-<!--     ]] -->
-<!--   Exp [e] = [[${e}]] -->
-<!--   AddExp_plus [e1 op e2] = [[${e1}+${e2}]] -->
-<!--   AddExp_minus [e1 op e2] = [[${e1}-${e2}]] -->
-<!--   AddExp [e] = [[${e}]] -->
-<!--   MulExp_times [e1 op e2] = [[${e1}*${e2}]] -->
-<!--   MulExp_divide [e1 op e2] = [[${e1}/${e2}]] -->
-<!--   MulExp [e] = [[${e}]] -->
-<!--   ExpExp_power[p op e] = [[${p}^${e}]] -->
-<!--   ExpExp [p] = [[${p}]] -->
-<!--   PriExp_paren [lp p rp] = [[(${p})]] -->
-<!--   PriExp_pos [sign p] = [[+${p}]] -->
-<!--   PriExp_neg [sign p] = [[-${p}]] -->
-<!--   PriExp [p] = [[${p}]] -->
-<!--   ident [l @a] = [[${l}${a}]] -->
-<!--   number_fract [@numerator dot @denominator] = [[${numerator}.${denominator}]] -->
-<!--   number_whole [@n] = [[${n}]] -->
-<!-- </textarea> -->
-<!-- <br> -->
-<!-- <label for="wasmsemantics">wasm semantics:</label> -->
-<!-- <textarea id="wasmsemantics" rows="10" cols="70" placeholder="semantics" style="background-color:oldlace;"> -->
-<!--   Top [e] =  -->
-<!--   [[ -->
-<!-- (module -->
-<!--   (func $custom (param $x f64) (param $y f64) (result f64) -->
-<!-- ${e}) -->
-<!--   (export "custom" (func $custom)) -->
-<!-- ) -->
-<!--     ]] -->
-<!--   Exp [e] = [[${e}]] -->
-<!--   AddExp_plus [e1 op e2] = [[${e1}\n${e2}\nf64.add\n]] -->
-<!--   AddExp_minus [e1 op e2] = [[${e1}\n${e2}\nf64.sub\n]] -->
-<!--   AddExp [e] = [[${e}]] -->
-<!--   MulExp_times [e1 op e2] = [[${e1}\n${e2}\nf64.mul\n]] -->
-<!--   MulExp_divide [e1 op e2] = [[${e1}\n${e2}\nf64.div\n]] -->
-<!--   MulExp [e] = [[${e}]] -->
-<!--   ExpExp_power[p op e] = [[(???exp ${p} ${e})]] -->
-<!--   ExpExp [p] = [[${p}]] -->
-<!--   PriExp_paren [lp p rp] = [[${p}]] -->
-<!--   PriExp_pos [sign p] = [[${p}]] -->
-<!--   PriExp_neg [sign p] = [[${p}\nf64.neg]] -->
-<!--   PriExp [p] = [[${p}]] -->
-<!--   ident [l @a] = [[local.get \$${l}${a}]] -->
-<!--   number_fract [@numerator dot @denominator] = [[f64.const ${numerator}.${denominator}]] -->
-<!--   number_whole [@n] = [[f64.const ${n}]] -->
-<!-- </textarea> -->
-<!-- <br> -->
 <label for="semantics">semantics:</label>
 <textarea id="semantics" rows="10" cols="70" placeholder="semantics" style="background-color:oldlace;">
 
   Top [e] = [[
-    print(${e});
+    ${e}
     ]]
   Exp [e] = [[${e}]]
-  AddExp_plus [e1 op e2] = [[${e1}+${e2}]]
-  AddExp_minus [e1 op e2] = [[${e1}-${e2}]]
+  AddExp_plus [e1 op e2] = [[${e1}${op}${e2}]]
+  AddExp_minus [e1 op e2] = [[${e1}${op}${e2}]]
   AddExp [e] = [[${e}]]
-  MulExp_times [e1 op e2] = [[${e1}*${e2}]]
-  MulExp_divide [e1 op e2] = [[${e1}/${e2}]]
+  MulExp_times [e1 op e2] = [[${e1}${op}${e2}]]
+  MulExp_divide [e1 op e2] = [[${e1}${op}${e2}]]
   MulExp [e] = [[${e}]]
-  ExpExp_power[p op e] = [[${p}^${e}]]
+  ExpExp_power[p op e] = [[${p}${op}${e}]]
   ExpExp [p] = [[${p}]]
   PriExp_paren [lp p rp] = [[(${p})]]
-  PriExp_pos [sign p] = [[+${p}]]
-  PriExp_neg [sign p] = [[-${p}]]
+  PriExp_pos [sign p] = [[${sign}${p}]]
+  PriExp_neg [sign p] = [[${sign}${p}]]
   PriExp [p] = [[${p}]]
   ident [l @a] = [[${l}${a}]]
-  number_fract [@numerator dot @denominator] = [[${numerator}.${denominator}]]
+  number_fract [@numerator dot @denominator] = [[${numerator}${dot}${denominator}]]
   number_whole [@n] = [[${n}]]
 </textarea>
-
-<!-- <br> -->
-<!-- <label for="generatedSemantics">generated semantics:</label> -->
-<!-- <textarea id="generatedSemantics" name="generatedSemantics" rows="10" cols="70" placeholder="Generated JS code" readonly style="background-color:whitesmoke;"> -->
-<!-- </textarea> -->
 
 <br>
 <label for="source">source</label>
@@ -146,12 +88,7 @@ Arithmetic {
 <br>
 <br>
 <p id="status" > READY </p>
-<!-- </textarea> -->
-<!-- <label for="status">status</label> -->
-<!-- <textarea id="status" name="status" rows="10" cols="70" placeholder="status"> -->
-<!-- </textarea> -->
 
-<!-- see https://stackoverflow.com/questions/1880198/how-to-execute-shell-command-in-javascript -->
 <br>
 <button onclick="generate ()">Generate</button>
 <script src="ohm.js"></script>
