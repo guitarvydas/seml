@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+textarea {
+}
+</style>
+</head>
+<body>
+
+
+<h1>ASON (Transpiler Workbench)</h1>
+
+<br>
+<label for="grammar_1">basic tokens:</label>
+<br>
+<textarea id="grammar_1" name="a" rows="10" cols="70" placeholder="grammar" style="background-color:oldlace;">
+asonToken {
+  output = asonToken+
+  asonToken = comment | string | delimiter | integer | namedMonth | hex | ws | unknown | ident
+
+  unknown = "?" "?" "?"
+
+  hex = "#" hexDig+
+
+  ident = ~namedMonth ident1 identFollow*
+  ident1 = "a" .. "z" | "A" .. "Z"
+  identFollow = "0" .. "9" | "_" | ident1
+
+  delimiter = da | db | dc | dd | de | df | dg
+              | dh | di | dj | dk | dl | dm | dn | do | dp
+	      
+  da = "["
+  db = "]"
+  dc = "{" 
+  dd = "}"
+  de = "("
+  df = ")"
+  dg = "/"
+  dh = "."
+  di = ":"
+  dj = "@"
+  dk = "#"
+  dl = "-"
+  dm = "$"
+  dn = "<"
+  do = ">"
+  dp = "+"
+
+  integer = decimalDigit+
+  decimalDigit = "0" .. "9"
+  hexDig = "A" .. "F" | decimalDigit
+
+  comment = ";" anyToEol
+  anyToEol = commentChar* eol
+  commentChar = ~eol any
+  eol = "\n"
+  
+  ws = wsChar+
+  wsChar = " " | "\n" | "\t"
+  string = "\"" stringChar* "\""
+  stringChar = escapedChar | simpleStringChar
+  escapedChar = "\\" any
+  simpleStringChar = ~"\"" any
+  
+  namedMonth =   january | february | march | april
+               | may | june | july | august
+  	       | september | october | november | december
+
+  january = cJ cA cN cU cA cR cY --long
+  	  | cJ cA cN --abbrev
+  february = cF cE cB cR cU cA cR cY --long
+  	   | cF cE cB --abbrev
+  march = cM cA cR cC cH  --long
+          | cM cA cR --abbrev
+  april = cA cP cR cI cL --long
+  	  | cA cP cR --abbrev
+  may = cM cA cY --long
+  june = cJ cU cN cE --long
+         | cJ cU cN --abbrev
+  july = cJ cU cL cY  --long
+       	     | cJ cU cL --abbrev
+  august = cA cU cG cU cS cT --long 
+             | cA cU cG --abbrev
+  september = cS cE cP cT cE cM cB cE cR  --long
+             | cS cE cP cT --abbrev1
+	     | cS cE cP --abbrev2
+  october = cO cC cT cO cB cE cR  --long
+             | cO cC cT --abbrev
+  november = cN cO cV cE cM cB cE cR  --long
+             | cN cO cV --abbrev
+  december = cD cE cC cE cM cB cE cR  --long
+             | cD cE cC --abbrev
+
+  cA = "a" | "A"
+  cB = "b" | "B"
+  cC = "c" | "C"
+  cD = "d" | "D"
+  cE = "e" | "E"
+  cF = "f" | "F"
+  cG = "g" | "G"
+  cH = "h" | "H"
+  cI = "i" | "I"
+  cJ = "j" | "J"
+  cK = "k" | "K"
+  cL = "l" | "L"
+  cM = "m" | "M"
+  cN = "n" | "N"
+  cO = "o" | "O"
+  cP = "p" | "P"
+  cQ = "q" | "Q"
+  cR = "r" | "R"
+  cS = "s" | "S"
+  cT = "t" | "T"
+  cU = "u" | "U"
+  cV = "v" | "V"
+  cW = "w" | "W"
+  cX = "x" | "X"
+  cY = "y" | "Y"
+  cZ = "z" | "Z"
+}
+</textarea>
+
+<br>
+<label for="semantics">semantics:</label>
+<br>
+<textarea id="semantics_1" rows="10" cols="70" placeholder="semantics" style="background-color:oldlace;">
+
+output [@token] = [[${token}]]
+asonToken [t] = [[${t}\n]]
+unknown [_1 _2 _3] = [[U ]]
+hex [_ @h] = [[H ${encodeURIComponent(h)}]]
+ident [id1 @idf] = [[N ${encodeURIComponent(id1)}${encodeURIComponent(idf)}]]
+ident1 [c] = [[${encodeURIComponent(c)}]]
+identFollow [c] = [[${encodeURIComponent(c)}]]
+
+delimiter [d] = [[${d}]]
+da [c] = [[D[ []]
+db [c] = [[D${c} ${c}]]
+dc [c] = [[D{ {]]
+dd [c] = [[D} }]]
+de [c] = [[D( (]]
+df [c] = [[D) )]]
+dg [c] = [[D/ /]]
+dh [c] = [[D. .]]
+di [c] = [[D: :]]
+dj [c] = [[D@ @]]
+dk [c] = [[D# #]]
+dl [c] = [[D- -]]
+dm [c] = [[D$ $]]
+dn [c] = [[D< <]]
+do [c] = [[D> >]]
+dp [c] = [[D+ +]]
+
+integer [@d] = [[I ${encodeURIComponent(d)}]]
+decimalDigit [c] = [[${encodeURIComponent(c)}]]
+hexDig [c] = [[${encodeURIComponent(c)}]]
+ws [@s] = [[W ${encodeURIComponent(s)}]]
+wsChar [c] = [[${encodeURIComponent(c)}]]
+string [lq @cs rq] = [[S ${encodeURIComponent(lq + cs + rq)}]]
+stringChar [c] = [[${encodeURIComponent(c)}]]
+escapedChar [e c] = [[${encodeURIComponent(c)}]]
+simpleStringChar [c] = [[${encodeURIComponent(c)}]]
+namedMonth [m] = [[M ${encodeURIComponent(m)}]]
+january_long [c1 c2 c3 c4 c5 c6 c7] = [[january]]
+january_abbrev [c1 c2 c3] = [[january]]
+february_long [c1 c2 c3 c4 c5 c6 c7 c8] = [[february]]
+february_abbrev [c1 c2 c3] = [[february]]
+march_long [c1 c2 c3 c4 c5] = [[march]]
+march_abbrev [c1 c2 c3] = [[march]]
+april_long [c1 c2 c3 c4 c5] = [[april]]
+april_abbrev [c1 c2 c3] = [[april]]
+may_long [c1 c2 c3] = [[may]]
+june_long [c1 c2 c3 c4] = [[june]]
+june_abbrev [c1 c2 c3] = [[june]]
+july_long [c1 c2 c3 c4] = [[july]]
+july_abbrev [c1 c2 c3] = [[july]]
+august_long [c1 c2 c3 c4 c5 c6] = [[august]]
+august_abbrev [c1 c2 c3] = [[august]]
+september_long [c1 c2 c3 c4 c5 c6 c7 c8 c9] = [[september]]
+september_abbrev1 [c1 c2 c3 c4] = [[september]]
+september_abbrev2 [c1 c2 c3] = [[september]]
+october_long [c1 c2 c3 c4 c5 c6 c7] = [[october]]
+october_abbrev [c1 c2 c3] = [[october]]
+november_long [c1 c2 c3 c4 c5 c6 c7 c8] = [[november]]
+november_abbrev [c1 c2 c3] = [[november]]
+december_long [c1 c2 c3 c4 c5 c6 c7 c8] = [[december]]
+december_abbrev [c1 c2 c3] = [[december]]
+
+cA [c] = [[${encodeURIComponent(c)}]]
+cB [c] = [[${encodeURIComponent(c)}]]
+cC [c] = [[${encodeURIComponent(c)}]]
+cD [c] = [[${encodeURIComponent(c)}]]
+cE [c] = [[${encodeURIComponent(c)}]]
+cF [c] = [[${encodeURIComponent(c)}]]
+cG [c] = [[${encodeURIComponent(c)}]]
+cH [c] = [[${encodeURIComponent(c)}]]
+cI [c] = [[${encodeURIComponent(c)}]]
+cJ [c] = [[${encodeURIComponent(c)}]]
+cK [c] = [[${encodeURIComponent(c)}]]
+cL [c] = [[${encodeURIComponent(c)}]]
+cM [c] = [[${encodeURIComponent(c)}]]
+cN [c] = [[${encodeURIComponent(c)}]]
+cO [c] = [[${encodeURIComponent(c)}]]
+cP [c] = [[${encodeURIComponent(c)}]]
+cQ [c] = [[${encodeURIComponent(c)}]]
+cR [c] = [[${encodeURIComponent(c)}]]
+cS [c] = [[${encodeURIComponent(c)}]]
+cT [c] = [[${encodeURIComponent(c)}]]
+cU [c] = [[${encodeURIComponent(c)}]]
+cV [c] = [[${encodeURIComponent(c)}]]
+cW [c] = [[${encodeURIComponent(c)}]]
+cX [c] = [[${encodeURIComponent(c)}]]
+cY [c] = [[${encodeURIComponent(c)}]]
+cZ [c] = [[${encodeURIComponent(c)}]]
+
+comment [sc chars] = [[C ;${encodeURIComponent(chars)}]]
+anyToEol [@cs eol] = [[${cs}${eol}]]
+commentChar [c] = [[${c}]]
+eol [c] = [[${c}]]
+  
+</textarea>
+<br>
+<label for="source_1">source</label>
+<br>
+<textarea id="source_1" name="source" rows="10" cols="70" placeholder="notation test" style="background-color:oldlace;">
+{ from: mc
+   { statement: 1111-11-11
+     { year: 2021
+; comment string
+       [
+         [ jul-23 ??? -333.53 pppppp ]
+       ]
+     }
+     balance : 1234.56
+  }
+}
+</textarea>
+
+<br>
+<label for="transpiled_1">transpiled</label>
+<br>
+<textarea id="transpiled_1" name="transpiled" rows="10" cols="70" placeholder="transpiled"  readonly style="background-color:whitesmoke;">
+</textarea>
+<br>
+<br>
+<p id="status_1" > READY </p>
+
+<!-- ...................... -->
+
+
+
+<br>
+<label for="grammar_2">kill whitespace:</label>
+<br>
+<textarea id="grammar_2" name="a" rows="10" cols="70" placeholder="grammar" style="background-color:oldlace;">
+killws {
+  output = asonToken+
+  asonToken = ws | comment | token
+
+  ws = "W" spc text eol
+  comment = "C" spc text eol
+  token =  tag subtag? whiteSpace text? eol
+
+  tag = "A" | "S" | "I" | "M" | "H" | "U" | "N" | "D"
+  subtag =   "[" | "]" | "{" | "}" | "(" | ")"
+           | "/" | "." | ":" | "@" | "#" | "-" | "+" | "$" | "<" | ">"
+  
+  text = textChar+
+  textChar = ~eol whiteSpace* any
+  eol = "\n"+
+  spc = whiteSpace
+  whiteSpace = " " | "\t"
+}
+</textarea>
+
+<br>
+<label for="semantics_2">semantics:</label>
+<br>
+<textarea id="semantics_2" rows="10" cols="70" placeholder="semantics" style="background-color:oldlace;">
+
+output [@a] = [[${a}]]
+
+token [tag @subtag ws @text _eol] = [[${tag}${subtag} ${text}\n]]
+ws [tag s text _eol] = [[]]
+comment [tag s text _eol] = [[]]
+
+text [@t] = [[${t}]]
+textChar [@ws c] = [[${c}]]
+eol [@c] = [[]]
+whiteSpace [c] = [[]]
+
+tag [c] = [[${c}]]
+subtag [c] = [[${c}]]
+</textarea>
+
+<br>
+<label for="transpiled_2">transpiled</label>
+<br>
+<textarea id="transpiled_2" name="transpiled" rows="10" cols="70" placeholder="transpiled"  readonly style="background-color:whitesmoke;">
+</textarea>
+<br>
+<br>
+<p id="status_2" > READY </p>
+
+<!-- ...................... -->
+
+<br>
+<label for="grammar_3">numerical:</label>
+<br>
+<textarea id="grammar_3" rows="10" cols="70" placeholder="grammar" style="background-color:oldlace;">
+numericalValues {
+  output = numericalToken+
+  numericalToken = hex | pair | range | tuple | currency | float | eufloat | integer | otherToken
+
+  hex = hexToken
+  pair = integerToken x integerToken
+  range = integerToken dot dot integerToken
+  tuple = integerToken dot integerToken dot integerToken
+  currency = dollar integerToken dot integerToken
+  eufloat = integerToken comma integerToken
+  float = integerToken dot integerToken
+  integer = integerToken
+  otherToken =  tag subtag? whiteSpace text? eol
+
+  hexToken = "H" spc text eol
+  integerToken = "I" spc text eol
+
+  dot = "D" "." spc text eol
+  dollar = "D" "$" spc text eol
+  comma = "D" "," spc text eol
+  x = "N" spc "x" eol
+
+  tag = "A" | "S" | "I" | "M" | "H" | "U" | "N" | "D"
+  subtag =   "[" | "]" | "{" | "}" | "(" | ")"
+           | "/" | "." | ":" | "@" | "#" | "-" | "+" | "$" | "<" | ">"
+  
+  text = whiteSpace *textChar+
+  textChar = ~eol any
+  eol = "\n"+
+  spc = whiteSpace
+  whiteSpace = " " | "\t"
+}
+</textarea>
+
+<br>
+<label for="semantics_3">semantics:</label>
+<br>
+<textarea id="semantics_3" rows="10" cols="70" placeholder="semantics" style="background-color:oldlace;">
+output [@t] = [[${t}]]
+numericalToken [t] = [[${t}]]
+
+hex [v] = [[H ${v}\n]]
+pair [i1 x i2] = [[bP ${i1} ${i2}\n]]
+range [i1 d1 d2 i2] = [[bR ${i1} ${i2}\n]]
+tuple [i1 d1 i2 d2 i3] = [[bT ${i1} ${i2} ${i3}\n]]
+currency [d i1 d1 i2] = [[b$ ${i1} ${i2}\n]]
+eufloat [i1 c i2] = [[bE ${i1} ${i2}\n]]
+float [i1 d i2] = [[bF ${i1} ${i2}\n]]
+integer [v] = [[I ${v}\n]]
+otherToken [tag subtag ws text nl] = [[${tag}${subtag} ${text}\n]]
+
+hexToken [htag spc text nl] = [[${text}]]
+integerToken [itag spc text nl] = [[${text}]]
+
+dot [d dot spc text eol] = [[]]
+dollar [d dollar spc text eol] = [[]]
+comma [d comma spc text eol] = [[]]
+x [tag spc x eol] = [[]]
+
+tag [c] = [[${c}]]
+subtag [c] = [[${c}]]
+
+text [ws @cs] = [[${cs}]]
+textChar [c] = [[${c}]]
+eol [@c] = [[${c}]]
+spc [c] = [[${c}]]
+whiteSpace [c] = [[${c}]]
+</textarea>
+
+<br>
+<label for="transpiled_3">transpiled</label>
+<br>
+<textarea id="transpiled_3" rows="10" cols="70" placeholder="transpiled"  readonly style="background-color:whitesmoke;">
+</textarea>
+<br>
+<br>
+<p id="status_3" > READY </p>
+
+<!-- ...................... -->
+<br>
+<label for="grammar_4">dates:</label>
+<br>
+<textarea id="grammar_4" rows="10" cols="70" placeholder="grammar" style="background-color:oldlace;">
+dates {
+  output = dateToken+
+  dateToken = yyyymmddhhmmsstz |  yyyymmddhhmmss | yyyymmdd | mmdd | hhmmss | otherToken
+
+  yyyymmddhhmmsstz = yyyymmdd dash hhmmss dashOrPlus tz
+  yyyymmddhhmmss = yyyymmdd dash hhmmss
+  yyyymmdd = integerToken dash month dash integerToken
+  mmdd = month dash integerToken
+  hhmmss = integerToken colon integerToken colon integerToken
+
+  otherToken =  numericalToken | basicToken
+  basicToken = tag subtag? whiteSpace text? eol
+  numericalToken = ntag nsubtag whiteSpace text text? eol
+
+
+
+  tz = integerToken ":" integerToken
+  month = namedMonthToken | integerToken
+
+
+  integerToken = "I" spc text eol
+  namedMonthToken = "M" spc text eol
+
+  dashOrPlus = dash | plus
+  dash = "D" "-" spc text eol
+  plus = "D" "+" spc text eol
+  colon = "D" ":" spc text eol
+  dot = "D" "." spc text eol
+  dollar = "D" "$" spc text eol
+  comma = "D" "," spc text eol
+  x = "N" spc "x" eol
+
+  tag = "A" | "S" | "I" | "M" | "H" | "U" | "N" | "D"
+  subtag =   "[" | "]" | "{" | "}" | "(" | ")"
+           | "/" | "." | ":" | "@" | "#" | "-" | "+" | "$" | "<" | ">"
+
+  ntag = "b"
+  nsubtag = "P" | "R" | "T" | "$" | "E" | "F"
+  
+  text = whiteSpace *textChar+
+  textChar = ~eol ~whiteSpace any
+  eol = "\n"+
+  spc = whiteSpace
+  whiteSpace = " " | "\t"
+}
+</textarea>
+
+<br>
+<label for="semantics_4">semantics:</label>
+<br>
+<textarea id="semantics_4" rows="10" cols="70" placeholder="semantics" style="background-color:oldlace;">
+
+output [@t] = [[${t}]]
+dateToken [t] = [[${t}]]
+yyyymmddhhmmsstz [date dash1 hours dash2 tz] = [[cZ ${date} ${hours} ${tz}\n]]
+yyyymmddhhmmss [date dash1 hours] = [[cY ${date} ${hours}\n]]
+yyyymmdd [i1 dash1 mon dash2 i3] = [[cD ${i1} ${mon} ${i3}\n]]
+mmdd [mon dash1 i2] = [[cP ${mon} ${i2}\n]]
+hhmmss [i1 colon1 i2 colon2 i3] = [[cH ${i1} ${i2} ${i3}\n]]
+otherToken [t] = [[${t}]]
+basicToken [tag subtag ws text eol] = [[${tag}${subtag} ${text}\n]]
+numericalToken [tag subtag ws text1 text2 eol] = [[${tag}${subtag} ${text1} ${text2}\n]]
+
+tz [i1 colon i2] = [[${i1} ${i2}]]
+month [t] = [[${t}]]
+
+
+integerToken [itag spc text nl] = [[${text}]]
+namedMonthToken [tag spc text nl] = [[${text}]]
+
+dash [d dot spc text eol] = [[]]
+colon [d dot spc text eol] = [[]]
+dot [d dot spc text eol] = [[]]
+dollar [d dollar spc text eol] = [[]]
+comma [d comma spc text eol] = [[]]
+x [tag spc x eol] = [[]]
+
+tag [c] = [[${c}]]
+subtag [c] = [[${c}]]
+
+text [ws @cs] = [[${cs}]]
+textChar [c] = [[${c}]]
+eol [@c] = [[${c}]]
+spc [c] = [[${c}]]
+whiteSpace [c] = [[${c}]]
+</textarea>
+
+<br>
+<label for="transpiled_4">transpiled</label>
+<br>
+<textarea id="transpiled_4" rows="10" cols="70" placeholder="transpiled"  readonly style="background-color:whitesmoke;">
+</textarea>
+<br>
+<br>
+<p id="status_4" > READY </p>
+
+<!-- ...................... -->
+<br>
+<label for="grammar_5">strings and binary:</label>
+<br>
+<textarea id="grammar_5" rows="10" cols="70" placeholder="grammar" style="background-color:oldlace;">
+stringsAndBinary {
+  output = sbToken+
+  sbToken = binaryBase64 | email | url | path | hypertextTag | otherToken
+
+  binaryBase64 = octothorpe hexToken
+  email = identToken at identToken
+  hypertextTag = lt identToken gt
+  path = percent identToken
+  url = identToken colon slash slash
+
+  otherToken =   threeTextToken | twoTextToken | basicToken | zeroTextToken
+  threeTextToken = tag subtag? whiteSpace text text text eol
+  twoTextToken = tag subtag? whiteSpace text text eol
+  basicToken = tag subtag? whiteSpace text eol
+  zeroTextToken = tag whiteSpace eol
+
+
+  integerToken = "I" spc text eol
+  hexToken = "H" spc text eol
+
+  octothorpe = "D" "#" spc text eol
+  at = "D" "@" spc text eol
+  percent = "D" "%" spc text eol
+  lt = "D" "<" spc text eol
+  gt = "D" ">" spc text eol
+  slash = "D" "/" spc text eol
+  colon = "D" ":" spc text eol
+  identToken = "N" spc text eol
+
+  tag = "A" | "S" | "I" | "M" | "H" | "U" | "N" | "D" | "b" | "c"
+  subtag =   "[" | "]" | "{" | "}" | "(" | ")"
+           | "/" | "." | ":" | "@" | "#" | "-" | "+" | "$" | "<" | ">"
+           | "P" | "R" | "T" | "$" | "E" | "F"
+	   | "D" | "Z" | "Y" | "P" | "H" 
+  
+  text = whiteSpace *textChar+
+  textChar = ~eol ~whiteSpace any
+  eol = "\n"+
+  spc = whiteSpace
+  whiteSpace = " " | "\t"
+}
+
+</textarea>
+
+<br>
+<label for="semantics_5">semantics:</label>
+<br>
+<textarea id="semantics_5" rows="10" cols="70" placeholder="semantics" style="background-color:oldlace;">
+output[@t] = [[${t}]]
+
+sbToken [t] = [[${t}]]
+binaryBase64 [o h] = [[dB ${h}]]
+email [id1 at id2] = [[d@ ${id1} ${id2}]]
+hypertextTag [lt id gt] =[[d< ${id}]]
+path [p id] = [[d% ${id}]]
+url [id c s1 s2] = [[dU ${id}]]
+
+otherToken [t] = [[${t}]]
+threeTextToken [t @s ws t1 t2 t3 eol] = [[${t}${s} ${t1} ${t2} ${t3}\n]]
+twoTextToken [t @s ws t1 t2 eol] = [[${t}${s} ${t1} ${t2}\n]]
+basicToken [t @s ws t1 eol] = [[${t}${s} ${t1}\n]]
+zeroTextToken [t ws eol] = [[${t}\n]]
+integerToken [t ws t1 eol] = [[${t} ${t1}\n]]
+hexToken [t ws t1 eol] = [[${t} ${t1}\n]]
+
+
+octothorpe [d dot spc text eol] = [[]]
+at [d dot spc text eol] = [[]]
+percent [d dot spc text eol] = [[]]
+lt [d dot spc text eol] = [[]]
+gt [d dot spc text eol] = [[]]
+slash [d dot spc text eol] = [[]]
+colon [d dot spc text eol] = [[]]
+identToken [d spc text eol] = [[${text}]]
+
+
+tag [c] = [[${c}]]
+subtag [c] = [[${c}]]
+
+text [ws @cs] = [[${cs}]]
+textChar [c] = [[${c}]]
+eol [@c] = [[${c}]]
+spc [c] = [[${c}]]
+whiteSpace [c] = [[${c}]]
+</textarea>
+
+<br>
+<label for="transpiled_5">transpiled:</label>
+<br>
+<textarea id="transpiled_5" rows="10" cols="70" placeholder="transpiled"  readonly style="background-color:whitesmoke;">
+</textarea>
+<br>
+<br>
+<p id="status_5" > READY </p>
+
+<!-- ...................... -->
+<br>
+<label for="grammar_6">negative numbers:</label>
+<br>
+<textarea id="grammar_6" rows="10" cols="70" placeholder="grammar" style="background-color:oldlace;">
+negnum {
+  output = wToken+
+  wToken = 
+    | negativeInteger
+    | negativeFloat
+    | negativeEufloat
+    | otherToken
+
+  negativeInteger = dash "I" spc text eol
+  negativeFloat = dash "bF" spc text spc text eol
+  negativeEufloat = dash "bE" spc text spc text eol
+
+  otherToken =   threeTextToken | twoTextToken | basicToken | zeroTextToken
+  threeTextToken = tag subtag? whiteSpace text text text eol
+  twoTextToken = tag subtag? whiteSpace text text eol
+  basicToken = tag subtag? whiteSpace text eol
+  zeroTextToken = "U" eol
+
+
+  ident = "N" spc text eol
+  dash = "D" "-" spc text eol
+  at = "D" "@" spc text eol
+  colon = "D" ":" spc text eol
+  dot = "D" "." spc text eol
+  slash = "D" "/" spc text eol
+  squote = "D" "'" spc text eol
+  
+  tag = "A" | "S" | "I" | "M" | "H" | "U" | "N" | "D" | "b" | "c" | "d"
+  subtag =   "[" | "]" | "{" | "}" | "(" | ")"
+           | "/" | "." | ":" | "@" | "#" | "-" | "+" | "$" | "<" | ">"
+           | "P" | "R" | "T" | "$" | "E" | "F"
+	   | "D" | "Z" | "Y" | "P" | "H" 
+	   | "B" | "@" | "<" | "%" | "U"
+  
+  text = whiteSpace *textChar+
+  textChar = ~eol ~whiteSpace any
+  eol = "\n"+
+  spc = whiteSpace
+  whiteSpace = " " | "\t"
+}
+</textarea>
+
+<br>
+<label for="semantics_6">transpiled:</label>
+<br>
+<textarea id="semantics_6" rows="10" cols="70" placeholder="semantics" style="background-color:oldlace;">
+
+output [@t] = [[${t}]]
+wToken [t] = [[${t}]]
+
+
+otherToken [t] = [[${t}]]
+threeTextToken [t @s ws t1 t2 t3 eol] = [[${t}${s} ${t1} ${t2} ${t3}\n]]
+twoTextToken [t @s ws t1 t2 eol] = [[${t}${s} ${t1} ${t2}\n]]
+basicToken [t @s ws t1 eol] = [[${t}${s} ${t1}\n]]
+zeroTextToken [t eol] = [[${t}\n]]
+
+
+ident [tag spc text eol] = [[${text}]]
+at [d at spc text eol] = [[]]
+colon [d c spc text eol] = [[]]
+dot [d dot spc text eol] = [[]]
+slash [d s spc text eol] = [[]]
+squote [d q spc text eol] = [[]]
+
+
+
+
+tag [c] = [[${c}]]
+subtag [c] = [[${c}]]
+
+text [ws @cs] = [[${cs}]]
+textChar [c] = [[${c}]]
+eol [@c] = [[${c}]]
+spc [c] = [[${c}]]
+whiteSpace [c] = [[${c}]]
+
+dash [tag d spc t eol] = [[]]
+negativeInteger [d tag spc i eol] = [[I -${i}\n]]
+negativeFloat [d tag spc i1 spc2 i2 eol] = [[bF -${i1} ${i2}\n]]
+negativeEufloat [d tag spc i1 spc2 i2 eol] = [[bF -${i1} ${i2}\n]]
+</textarea>
+
+<br>
+<label for="transpiled_6">transpiled</label>
+<br>
+<textarea id="transpiled_6" rows="10" cols="70" placeholder="transpiled"  readonly style="background-color:whitesmoke;">
+</textarea>
+<br>
+<br>
+<p id="status_6" > READY </p>
+
+<!-- ...................... -->
+<br>
+<label for="grammar_7">words:</label>
+<br>
+<textarea id="grammar_7" rows="10" cols="70" placeholder="grammar" style="background-color:oldlace;">
+words {
+  output = wToken+
+  wToken = 
+
+    | getUnevalField
+    | setfield
+    | selectfield
+    | pathRefinement
+
+    | literal
+    | symbol
+    | refinement
+    | selector
+    | getword
+
+    | defineword
+    | useword
+
+    | otherToken
+
+  getUnevalField = colon ident dot ident
+  setfield = ident dot ident colon
+  selectfield = ident dot ident
+  pathRefinement = ident slash ident
+
+  literal = at ident
+  symbol = squote ident
+  refinement = slash ident
+  selector = dot ident
+  getword =  colon ident
+
+  defineword = ident colon
+  useword = ident
+
+
+  otherToken =   threeTextToken | twoTextToken | basicToken | zeroTextToken
+  threeTextToken = tag subtag? whiteSpace text text text eol
+  twoTextToken = tag subtag? whiteSpace text text eol
+  basicToken = tag subtag? whiteSpace text eol
+  zeroTextToken = "U" eol
+
+
+  ident = "N" spc text eol
+  at = "D" "@" spc text eol
+  colon = "D" ":" spc text eol
+  dot = "D" "." spc text eol
+  slash = "D" "/" spc text eol
+  squote = "D" "'" spc text eol
+  
+  tag = "A" | "S" | "I" | "M" | "H" | "U" | "N" | "D" | "b" | "c" | "d"
+  subtag =   "[" | "]" | "{" | "}" | "(" | ")"
+           | "/" | "." | ":" | "@" | "#" | "-" | "+" | "$" | "<" | ">"
+           | "P" | "R" | "T" | "$" | "E" | "F"
+	   | "D" | "Z" | "Y" | "P" | "H" 
+	   | "B" | "@" | "<" | "%" | "U"
+  
+  text = whiteSpace *textChar+
+  textChar = ~eol ~whiteSpace any
+  eol = "\n"+
+  spc = whiteSpace
+  whiteSpace = " " | "\t"
+}
+</textarea>
+
+<br>
+<label for="semantics_7">semantics:</label>
+<br>
+<textarea id="semantics_7" rows="10" cols="70" placeholder="semantics" style="background-color:oldlace;">
+
+
+output [@t] = [[${t}]]
+wToken [t] = [[${t}]]
+
+getUnevalField [c id d id2] = [[eU ${id} ${id2}\n]]
+setfield [id d id2 c] = [[eS ${id} ${id2}\n]]
+selectfield [id d id2] = [[eF ${id} ${id2}\n]]
+pathRefinement [id s id2] = [[eP ${id} ${id2}\n]]
+
+literal [at id] = [[e@ ${id}\n]]
+symbol [q id] = [[e' ${id}\n]]
+refinement [s id] = [[e/ ${id}\n]]
+selector [d id] = [[e. ${id}\n]]
+getword [c id] = [[e: ${id}\n]]
+
+defineword [id c] = [[e! ${id}\n]]
+useword [id] = [[e? ${id}\n]]
+
+
+otherToken [t] = [[${t}]]
+threeTextToken [t @s ws t1 t2 t3 eol] = [[${t}${s} ${t1} ${t2} ${t3}\n]]
+twoTextToken [t @s ws t1 t2 eol] = [[${t}${s} ${t1} ${t2}\n]]
+basicToken [t @s ws t1 eol] = [[${t}${s} ${t1}\n]]
+zeroTextToken [t eol] = [[${t}\n]]
+
+
+ident [tag spc text eol] = [[${text}]]
+at [d at spc text eol] = [[]]
+colon [d c spc text eol] = [[]]
+dot [d dot spc text eol] = [[]]
+slash [d s spc text eol] = [[]]
+squote [d q spc text eol] = [[]]
+
+
+
+
+tag [c] = [[${c}]]
+subtag [c] = [[${c}]]
+
+text [ws @cs] = [[${cs}]]
+textChar [c] = [[${c}]]
+eol [@c] = [[${c}]]
+spc [c] = [[${c}]]
+whiteSpace [c] = [[${c}]]
+</textarea>
+
+<br>
+<label for="transpiled_7">transpiled</label>
+<br>
+<textarea id="transpiled_7" rows="10" cols="70" placeholder="transpiled"  readonly style="background-color:whitesmoke;">
+</textarea>
+<br>
+<br>
+<p id="status_7" > READY </p>
+
+<!-- ...................... -->
+<br>
+<label for="grammar_8">expressions:</label>
+<br>
+<textarea id="grammar_8" rows="10" cols="70" placeholder="grammar" style="background-color:oldlace;">
+expr {
+  main = expr+ 
+  expr = objectGroup | arrayGroup | expressionGroup | defineWordGroup | primary
+
+  objectGroup = lbraceToken expr* rbraceToken
+  arrayGroup = lbracketToken expr* rbracketToken
+  expressionGroup = lparToken expr* rparToken
+  defineWordGroup = defineWordToken expr
+  
+  groupBegin (groupBegin) = lbraceToken | rbraceToken | lbracketToken | rbracketToken | lparToken | rparToken
+
+  lbraceToken (open brace) = "D" "{" spc "{" eol
+  rbraceToken (close brace) = "D" "}" spc "}" eol
+  lbracketToken (open bracket) = "D" "[" spc "[" eol
+  rbracketToken (close bracket) = "D" "]" spc "]" eol
+  lparToken (open bracket) = "D" "(" spc "(" eol
+  rparToken (close bracket) = "D" ")" spc ")" eol
+  defineWordToken = "e!" spc text eol
+
+  primary = ~groupBegin (tripleTextToken | doubleTextToken | singleTextToken | noTextToken)
+  tripleTextToken = tag spc text spc text spc text eol
+  doubleTextToken = tag spc text spc text eol
+  singleTextToken = tag spc text eol
+  noTextToken = unknownTag eol
+
+  unknownTag (unknown) = "U"
+
+  tag (tag) = tagcode &endTag
+  endTag = space | eol | end
+
+  tagcode = basicTag | numericalTag | dateTag | stringsTag | wordsTag
+  basicTag = delimiterTag | "H" | "N" | "I" | "W" | "S" | "M" | "C" | "U"
+  delimiterTag =  "D[" | "D]" | "D{" | "D}" | "D(" | "D)"
+                | "D/" | "D." | "D:" | "D@" | "D#" | "D-" 
+		| "D+" | "D$" | "D<" | "D>"  
+  numericalTag = "bP" | "bR" | "bT" | "b$" | "bE" | "bF"
+  dateTag = "cZ" | "cY" | "cD" | "cP" | "cH"
+  stringsTag = "dB" | "d@" | "d<" | "d%" | "dU"
+  wordsTag =   "eU" | "eS" | "eF" | "eP" | "e@" | "e'"
+             | "e/" | "e." | "e:" | "e!" | "e?"
+  
+  text = ~tag textChar+
+  textChar = ~spc ~eol ~end any
+  spc (space) = " " | "\t"
+  eol (eol) = newline+
+  newline (newline) = "\n"
+}
+</textarea>
+
+<br>
+<label for="semantics_8">semantics:</label>
+<br>
+<textarea id="semantics_8" rows="10" cols="70" placeholder="semantics" style="background-color:oldlace;">
+
+<!-- ...................... -->
+
+
+
+<br>
+<button onclick="generate ()">Generate</button>
+<script src="../common/ohm.js"></script>
+<script src="../common/glue.js"></script>
+<script src="../common/scope.js"></script>
+<script id='generated'></script>
+<script>
+
+  function generate_tokens () {
+      let notationSource = document.getElementById('source_1').value;
+      let scnGrammar = document.getElementById('grammar_1').value;
+      let semantics = document.getElementById('semantics_1').value;
+      let generatedSCNSemantics = transpiler (semantics, glueGrammar, "_glue", glueSemantics);
+
+      _ruleInit();
+      try {
+	  document.getElementById('status_1').innerHTML = "FAILED";
+	  let semObject = eval('(' + generatedSCNSemantics + ')');
+	  document.getElementById ("transpiled_1").value = semObject;
+	  let tr = transpiler(notationSource, scnGrammar, "_glue", semObject);
+	  document.getElementById('transpiled_1').value = tr;
+	  document.getElementById('status_1').innerHTML = "OK";
+      }
+       catch (err) {
+	  document.getElementById('status_1').innerHTML = err;
+       }	   
+  }
+
+  function generate_killws () {
+      let notationSource = document.getElementById('transpiled_1').value;
+      let scnGrammar = document.getElementById('grammar_2').value;
+      let semantics = document.getElementById('semantics_2').value;
+      let generatedSCNSemantics = transpiler (semantics, glueGrammar, "_glue", glueSemantics);
+
+      _ruleInit();
+      try {
+	  document.getElementById('status_2').innerHTML = "FAILED";
+	  let semObject = eval('(' + generatedSCNSemantics + ')');
+	  document.getElementById ("transpiled_2").value = semObject;
+	  let tr = transpiler(notationSource, scnGrammar, "_glue", semObject);
+	  document.getElementById('transpiled_2').value = tr;
+	  document.getElementById('status_2').innerHTML = "OK";
+      }
+       catch (err) {
+	  document.getElementById('status_2').innerHTML = err;
+       }	   
+  }
+
+  function generate_numerical () {
+      let notationSource = document.getElementById('transpiled_2').value;
+      let scnGrammar = document.getElementById('grammar_3').value;
+      let semantics = document.getElementById('semantics_3').value;
+      let generatedSCNSemantics = transpiler (semantics, glueGrammar, "_glue", glueSemantics);
+
+      _ruleInit();
+      try {
+	  document.getElementById('status_3').innerHTML = "FAILED";
+	  let semObject = eval('(' + generatedSCNSemantics + ')');
+	  document.getElementById ("transpiled_3").value = semObject;
+	  let tr = transpiler(notationSource, scnGrammar, "_glue", semObject);
+	  document.getElementById('transpiled_3').value = tr;
+	  document.getElementById('status_3').innerHTML = "OK";
+      }
+       catch (err) {
+	  document.getElementById('status_3').innerHTML = err;
+       }	   
+  }
+
+  function generate_dates () {
+      let notationSource = document.getElementById('transpiled_3').value;
+      let scnGrammar = document.getElementById('grammar_4').value;
+      let semantics = document.getElementById('semantics_4').value;
+      let generatedSCNSemantics = transpiler (semantics, glueGrammar, "_glue", glueSemantics);
+
+      _ruleInit();
+      try {
+	  document.getElementById('status_4').innerHTML = "FAILED";
+	  let semObject = eval('(' + generatedSCNSemantics + ')');
+	  document.getElementById ("transpiled_4").value = semObject;
+	  let tr = transpiler(notationSource, scnGrammar, "_glue", semObject);
+	  document.getElementById('transpiled_4').value = tr;
+	  document.getElementById('status_4').innerHTML = "OK";
+      }
+       catch (err) {
+	  document.getElementById('status_4').innerHTML = err;
+       }	   
+  }
+
+  function generate_stringsAndBinary () {
+      let notationSource = document.getElementById('transpiled_4').value;
+      let scnGrammar = document.getElementById('grammar_5').value;
+      let semantics = document.getElementById('semantics_5').value;
+      let generatedSCNSemantics = transpiler (semantics, glueGrammar, "_glue", glueSemantics);
+
+      _ruleInit();
+      try {
+	  document.getElementById('status_5').innerHTML = "FAILED";
+	  let semObject = eval('(' + generatedSCNSemantics + ')');
+	  document.getElementById ("transpiled_5").value = semObject;
+	  let tr = transpiler(notationSource, scnGrammar, "_glue", semObject);
+	  document.getElementById('transpiled_5').value = tr;
+	  document.getElementById('status_5').innerHTML = "OK";
+      }
+       catch (err) {
+	  document.getElementById('status_5').innerHTML = err;
+       }	   
+  }
+
+  function generate_negativeNumbers () {
+      let notationSource = document.getElementById('transpiled_5').value;
+      let scnGrammar = document.getElementById('grammar_6').value;
+      let semantics = document.getElementById('semantics_6').value;
+      let generatedSCNSemantics = transpiler (semantics, glueGrammar, "_glue", glueSemantics);
+
+      _ruleInit();
+      try {
+	  document.getElementById('status_6').innerHTML = "FAILED";
+	  let semObject = eval('(' + generatedSCNSemantics + ')');
+	  document.getElementById ("transpiled_6").value = semObject;
+	  let tr = transpiler(notationSource, scnGrammar, "_glue", semObject);
+	  document.getElementById('transpiled_6').value = tr;
+	  document.getElementById('status_6').innerHTML = "OK";
+      }
+       catch (err) {
+	  document.getElementById('status_6').innerHTML = err;
+       }	   
+  }
+  function generate_words () {
+      let notationSource = document.getElementById('transpiled_6').value;
+      let scnGrammar = document.getElementById('grammar_7').value;
+      let semantics = document.getElementById('semantics_7').value;
+      let generatedSCNSemantics = transpiler (semantics, glueGrammar, "_glue", glueSemantics);
+
+      _ruleInit();
+      try {
+	  document.getElementById('status_7').innerHTML = "FAILED";
+	  let semObject = eval('(' + generatedSCNSemantics + ')');
+	  document.getElementById ("transpiled_7").value = semObject;
+	  let tr = transpiler(notationSource, scnGrammar, "_glue", semObject);
+	  document.getElementById('transpiled_7').value = tr;
+	  document.getElementById('status_7').innerHTML = "OK";
+      }
+       catch (err) {
+	  document.getElementById('status_7').innerHTML = err;
+       }	   
+  }
+  function generate_expressions () {
+      let notationSource = document.getElementById('transpiled_7').value;
+      let scnGrammar = document.getElementById('grammar_8').value;
+      let semantics = document.getElementById('semantics_8').value;
+      let generatedSCNSemantics = transpiler (semantics, glueGrammar, "_glue", glueSemantics);
+
+      _ruleInit();
+      try {
+	  document.getElementById('status_8').innerHTML = "FAILED";
+	  let semObject = eval('(' + generatedSCNSemantics + ')');
+	  document.getElementById ("transpiled_8").value = semObject;
+	  let tr = transpiler(notationSource, scnGrammar, "_glue", semObject);
+	  document.getElementById('transpiled_8').value = tr;
+	  document.getElementById('status_8').innerHTML = "OK";
+      }
+       catch (err) {
+	  document.getElementById('status_8').innerHTML = err;
+       }	   
+  }
+  function generate_lisp () {
+      let notationSource = document.getElementById('transpiled_8').value;
+      let scnGrammar = document.getElementById('grammar_9').value;
+      let semantics = document.getElementById('semantics_9').value;
+      let generatedSCNSemantics = transpiler (semantics, glueGrammar, "_glue", glueSemantics);
+
+      _ruleInit();
+      try {
+	  document.getElementById('status_9').innerHTML = "FAILED";
+	  let semObject = eval('(' + generatedSCNSemantics + ')');
+	  document.getElementById ("transpiled_9").value = semObject;
+	  let tr = transpiler(notationSource, scnGrammar, "_glue", semObject);
+	  document.getElementById('transpiled_9').value = tr;
+	  document.getElementById('status_9').innerHTML = "OK";
+      }
+       catch (err) {
+	  document.getElementById('status_9').innerHTML = err;
+       }	   
+  }
+
+  function generate () {
+      generate_tokens ();
+      generate_killws ();
+      generate_numerical ();
+      generate_dates ();
+      generate_stringsAndBinary ();
+      generate_negativeNumbers ();
+      generate_words ();
+      generate_expressions ();
+      generate_lisp ();
+  }
+  
+  </script>
+</body>
+</html>
+

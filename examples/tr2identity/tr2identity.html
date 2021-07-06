@@ -13,6 +13,7 @@ textarea {
 
 <br>
 <label for="grammar">grammar:</label>
+<br>
 <textarea id="grammar" name="a" rows="10" cols="70" placeholder="grammar" style="background-color:oldlace;">
 Arithmetic {
   /* SCN (Solution Centric Notation - mini-DSL) for arithmetic pseudo-code (identity) */
@@ -52,7 +53,9 @@ Arithmetic {
 }
 </textarea>
 
+<br>
 <label for="semantics">semantics:</label>
+<br>
 <textarea id="semantics" rows="10" cols="70" placeholder="semantics" style="background-color:oldlace;">
 
   Top [e] = [[
@@ -78,11 +81,14 @@ Arithmetic {
 
 <br>
 <label for="source">source</label>
+<br>
 <textarea id="source" name="source" rows="10" cols="70" placeholder="notation test" style="background-color:oldlace;">
 2+3
 </textarea>
 
+<br>
 <label for="transpiled">transpiled</label>
+<br>
 <textarea id="transpiled" name="transpiled" rows="10" cols="70" placeholder="transpiled"  readonly style="background-color:whitesmoke;">
 </textarea>
 <br>
@@ -91,9 +97,9 @@ Arithmetic {
 
 <br>
 <button onclick="generate ()">Generate</button>
-<script src="ohm.js"></script>
-<script src="glue.js"></script>
-<script src="scope.js"></script>
+<script src="../common/ohm.js"></script>
+<script src="../common/glue.js"></script>
+<script src="../common/scope.js"></script>
 <script id='generated'></script>
 <script>
 
