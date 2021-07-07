@@ -1,9 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-<style>
-textarea {
-}
+  <style>
+    textarea.inputsource {
+	background-color: lightgreen;
+    }
+    textarea.finaloutputfield {
+	background-color: lightblue;
+    }
+    textarea.tempinputfield {
+	background-color: oldlace;
+	display:none;
+    }
+    textarea.tempoutputfield {
+	background-color: whitesmoke;
+	display:none;
+    }
+    p.tempgrammarlabel {
+	background-color: lightblue;
+	display:none;
+    }
+    p.tempsemanticslabel {
+	background-color: orange;
+	display:none;
+    }
+    p.temptranspiledlabel {
+	background-color: red;
+	display:none;
+    }
+    p.tempstatus {
+	background-color: lightgray;
+	display:none;
+    }
 </style>
 </head>
 <body>
@@ -12,9 +40,9 @@ textarea {
 <h1>ASON (Transpiler Workbench)</h1>
 
 <br>
-<label for="grammar_1">basic tokens:</label>
+<p class="tempgrammarlabel">basic tokens:</p>
 <br>
-<textarea id="grammar_1" name="a" rows="10" cols="70" placeholder="grammar" style="background-color:oldlace;">
+<textarea id="grammar_1" name="a" rows="10" cols="70" placeholder="grammar" class="tempinputfield">
 asonToken {
   output = asonToken+
   asonToken = comment | string | delimiter | integer | namedMonth | hex | ws | unknown | ident
@@ -122,9 +150,9 @@ asonToken {
 </textarea>
 
 <br>
-<label for="semantics">semantics:</label>
+<p class="tempsemanticslabel">semantics:</p>
 <br>
-<textarea id="semantics_1" rows="10" cols="70" placeholder="semantics" style="background-color:oldlace;">
+<textarea id="semantics_1" rows="10" cols="70" placeholder="semantics" class="tempinputfield">
 
 output [@token] = [[${token}]]
 asonToken [t] = [[${t}\n]]
@@ -221,9 +249,9 @@ eol [c] = [[${c}]]
   
 </textarea>
 <br>
-<label for="source_1">source</label>
+<label for="source_1">source:</label>
 <br>
-<textarea id="source_1" name="source" rows="10" cols="70" placeholder="notation test" style="background-color:oldlace;">
+<textarea id="source_1" name="source" rows="10" cols="70" placeholder="notation test" class="inputsource">
 { from: mc
    { statement: 1111-11-11
      { year: 2021
@@ -238,22 +266,18 @@ eol [c] = [[${c}]]
 </textarea>
 
 <br>
-<label for="transpiled_1">transpiled</label>
+<p class="temptranspiledlabel">transpiled:</p>
 <br>
-<textarea id="transpiled_1" name="transpiled" rows="10" cols="70" placeholder="transpiled"  readonly style="background-color:whitesmoke;">
+<textarea id="transpiled_1" name="transpiled" rows="10" cols="70" placeholder="transpiled"  readonly class="tempoutputfield">
 </textarea>
-<br>
-<br>
-<p id="status_1" > READY </p>
+<p id="status_1" class="tempstatus"> READY </p>
 
 <!-- ...................... -->
 
 
 
-<br>
-<label for="grammar_2">kill whitespace:</label>
-<br>
-<textarea id="grammar_2" name="a" rows="10" cols="70" placeholder="grammar" style="background-color:oldlace;">
+<p class="tempgrammarlabel">kill whitespace:</p>
+<textarea id="grammar_2" name="a" rows="10" cols="70" placeholder="grammar" class="tempinputfield">
 killws {
   output = asonToken+
   asonToken = ws | comment | token
@@ -274,10 +298,8 @@ killws {
 }
 </textarea>
 
-<br>
-<label for="semantics_2">semantics:</label>
-<br>
-<textarea id="semantics_2" rows="10" cols="70" placeholder="semantics" style="background-color:oldlace;">
+<p class="tempsemanticslabel">semantics:</p>
+<textarea id="semantics_2" rows="10" cols="70" placeholder="semantics" class="tempinputfield">
 
 output [@a] = [[${a}]]
 
@@ -294,21 +316,15 @@ tag [c] = [[${c}]]
 subtag [c] = [[${c}]]
 </textarea>
 
-<br>
-<label for="transpiled_2">transpiled</label>
-<br>
-<textarea id="transpiled_2" name="transpiled" rows="10" cols="70" placeholder="transpiled"  readonly style="background-color:whitesmoke;">
+<p class="temptranspiledlabel">transpiled:</p>
+<textarea id="transpiled_2" name="transpiled" rows="10" cols="70" placeholder="transpiled"  readonly class="tempoutputfield">
 </textarea>
-<br>
-<br>
-<p id="status_2" > READY </p>
+<p id="status_2" class="tempstatus"> READY </p>
 
 <!-- ...................... -->
 
-<br>
-<label for="grammar_3">numerical:</label>
-<br>
-<textarea id="grammar_3" rows="10" cols="70" placeholder="grammar" style="background-color:oldlace;">
+<p class="tempgrammarlabel">numerical:</p>
+<textarea id="grammar_3" rows="10" cols="70" placeholder="grammar" class="tempinputfield">
 numericalValues {
   output = numericalToken+
   numericalToken = hex | pair | range | tuple | currency | float | eufloat | integer | otherToken
@@ -343,10 +359,8 @@ numericalValues {
 }
 </textarea>
 
-<br>
-<label for="semantics_3">semantics:</label>
-<br>
-<textarea id="semantics_3" rows="10" cols="70" placeholder="semantics" style="background-color:oldlace;">
+<p class="tempsemanticslabel">semantics:</p>
+<textarea id="semantics_3" rows="10" cols="70" placeholder="semantics" class="tempinputfield">
 output [@t] = [[${t}]]
 numericalToken [t] = [[${t}]]
 
@@ -378,20 +392,14 @@ spc [c] = [[${c}]]
 whiteSpace [c] = [[${c}]]
 </textarea>
 
-<br>
-<label for="transpiled_3">transpiled</label>
-<br>
-<textarea id="transpiled_3" rows="10" cols="70" placeholder="transpiled"  readonly style="background-color:whitesmoke;">
+<p class="temptranspiledlabel">transpiled:</p>
+<textarea id="transpiled_3" rows="10" cols="70" placeholder="transpiled"  readonly class="tempoutputfield">
 </textarea>
-<br>
-<br>
-<p id="status_3" > READY </p>
+<p id="status_3" class="tempstatus"> READY </p>
 
 <!-- ...................... -->
-<br>
-<label for="grammar_4">dates:</label>
-<br>
-<textarea id="grammar_4" rows="10" cols="70" placeholder="grammar" style="background-color:oldlace;">
+<p class="tempgrammarlabel">dates:</p>
+<textarea id="grammar_4" rows="10" cols="70" placeholder="grammar" class="tempinputfield">
 dates {
   output = dateToken+
   dateToken = yyyymmddhhmmsstz |  yyyymmddhhmmss | yyyymmdd | mmdd | hhmmss | otherToken
@@ -439,10 +447,8 @@ dates {
 }
 </textarea>
 
-<br>
-<label for="semantics_4">semantics:</label>
-<br>
-<textarea id="semantics_4" rows="10" cols="70" placeholder="semantics" style="background-color:oldlace;">
+<p class=tempsemanticslabel>semantics:</p>
+<textarea id="semantics_4" rows="10" cols="70" placeholder="semantics" class="tempinputfield">
 
 output [@t] = [[${t}]]
 dateToken [t] = [[${t}]]
@@ -479,20 +485,14 @@ spc [c] = [[${c}]]
 whiteSpace [c] = [[${c}]]
 </textarea>
 
-<br>
-<label for="transpiled_4">transpiled</label>
-<br>
-<textarea id="transpiled_4" rows="10" cols="70" placeholder="transpiled"  readonly style="background-color:whitesmoke;">
+<p class="temptranspiledlabel">transpiled:</p>
+<textarea id="transpiled_4" rows="10" cols="70" placeholder="transpiled"  readonly class="tempoutputfield">
 </textarea>
-<br>
-<br>
-<p id="status_4" > READY </p>
+<p id="status_4" class="tempstatus"> READY </p>
 
 <!-- ...................... -->
-<br>
-<label for="grammar_5">strings and binary:</label>
-<br>
-<textarea id="grammar_5" rows="10" cols="70" placeholder="grammar" style="background-color:oldlace;">
+<p class="tempgrammarlabel">strings and binary:</p>
+<textarea id="grammar_5" rows="10" cols="70" placeholder="grammar" class="tempinputfield">
 stringsAndBinary {
   output = sbToken+
   sbToken = binaryBase64 | email | url | path | hypertextTag | otherToken
@@ -537,10 +537,8 @@ stringsAndBinary {
 
 </textarea>
 
-<br>
-<label for="semantics_5">semantics:</label>
-<br>
-<textarea id="semantics_5" rows="10" cols="70" placeholder="semantics" style="background-color:oldlace;">
+<p class=tempsemanticslabel>semantics:</p>
+<textarea id="semantics_5" rows="10" cols="70" placeholder="semantics" class="tempinputfield">
 output[@t] = [[${t}]]
 
 sbToken [t] = [[${t}]]
@@ -579,20 +577,14 @@ spc [c] = [[${c}]]
 whiteSpace [c] = [[${c}]]
 </textarea>
 
-<br>
-<label for="transpiled_5">transpiled:</label>
-<br>
-<textarea id="transpiled_5" rows="10" cols="70" placeholder="transpiled"  readonly style="background-color:whitesmoke;">
+<p class="temptranspiledlabel">transpiled:</p>
+<textarea id="transpiled_5" rows="10" cols="70" placeholder="transpiled"  readonly class="tempoutputfield">
 </textarea>
-<br>
-<br>
-<p id="status_5" > READY </p>
+<p id="status_5" class="tempstatus"> READY </p>
 
 <!-- ...................... -->
-<br>
-<label for="grammar_6">negative numbers:</label>
-<br>
-<textarea id="grammar_6" rows="10" cols="70" placeholder="grammar" style="background-color:oldlace;">
+<p class="tempgrammarlabel">negative numbers:</p>
+<textarea id="grammar_6" rows="10" cols="70" placeholder="grammar" class="tempinputfield">
 negnum {
   output = wToken+
   wToken = 
@@ -635,10 +627,8 @@ negnum {
 }
 </textarea>
 
-<br>
-<label for="semantics_6">transpiled:</label>
-<br>
-<textarea id="semantics_6" rows="10" cols="70" placeholder="semantics" style="background-color:oldlace;">
+<p class=tempsemanticslabel>semantics:</p>
+<textarea id="semantics_6" rows="10" cols="70" placeholder="semantics" class="tempinputfield">
 
 output [@t] = [[${t}]]
 wToken [t] = [[${t}]]
@@ -676,20 +666,14 @@ negativeFloat [d tag spc i1 spc2 i2 eol] = [[bF -${i1} ${i2}\n]]
 negativeEufloat [d tag spc i1 spc2 i2 eol] = [[bF -${i1} ${i2}\n]]
 </textarea>
 
-<br>
-<label for="transpiled_6">transpiled</label>
-<br>
-<textarea id="transpiled_6" rows="10" cols="70" placeholder="transpiled"  readonly style="background-color:whitesmoke;">
+<p class="temptranspiledlabel">transpiled:</p>
+<textarea id="transpiled_6" rows="10" cols="70" placeholder="transpiled"  readonly class="tempoutputfield">
 </textarea>
-<br>
-<br>
-<p id="status_6" > READY </p>
+<p id="status_6" class="tempstatus"> READY </p>
 
 <!-- ...................... -->
-<br>
-<label for="grammar_7">words:</label>
-<br>
-<textarea id="grammar_7" rows="10" cols="70" placeholder="grammar" style="background-color:oldlace;">
+<p class="tempgrammarlabel">words:</p>
+<textarea id="grammar_7" rows="10" cols="70" placeholder="grammar" class="tempinputfield">
 words {
   output = wToken+
   wToken = 
@@ -754,10 +738,8 @@ words {
 }
 </textarea>
 
-<br>
-<label for="semantics_7">semantics:</label>
-<br>
-<textarea id="semantics_7" rows="10" cols="70" placeholder="semantics" style="background-color:oldlace;">
+<p class="tempsemanticslabel">semantics:</p>
+<textarea id="semantics_7" rows="10" cols="70" placeholder="semantics" class="tempinputfield">
 
 
 output [@t] = [[${t}]]
@@ -805,20 +787,14 @@ spc [c] = [[${c}]]
 whiteSpace [c] = [[${c}]]
 </textarea>
 
-<br>
-<label for="transpiled_7">transpiled</label>
-<br>
-<textarea id="transpiled_7" rows="10" cols="70" placeholder="transpiled"  readonly style="background-color:whitesmoke;">
+<p class="temptranspiledlabel">transpiled:</p>
+<textarea id="transpiled_7" rows="10" cols="70" placeholder="transpiled"  readonly class="tempoutputfield">
 </textarea>
-<br>
-<br>
-<p id="status_7" > READY </p>
+<p id="status_7" class="tempstatus"> READY </p>
 
 <!-- ...................... -->
-<br>
-<label for="grammar_8">expressions:</label>
-<br>
-<textarea id="grammar_8" rows="10" cols="70" placeholder="grammar" style="background-color:oldlace;">
+<p class="tempgrammarlabel">expressions:</p>
+<textarea id="grammar_8" rows="10" cols="70" placeholder="grammar" class="tempinputfield">
 expr {
   main = expr+ 
   expr = objectGroup | arrayGroup | expressionGroup | defineWordGroup | primary
@@ -868,10 +844,8 @@ expr {
 }
 </textarea>
 
-<br>
-<label for="semantics_8">semantics:</label>
-<br>
-<textarea id="semantics_8" rows="10" cols="70" placeholder="semantics" style="background-color:oldlace;">
+<p class="tempsemanticslabel">semantics:</p>
+<textarea id="semantics_8" rows="10" cols="70" placeholder="semantics" class="tempinputfield">
 
 
   main [@expr] = [[${expr}]]
@@ -930,20 +904,14 @@ g defineWord
   newline [nl] = [[${nl}]]
 </textarea>
 
-<br>
-<label for="transpiled_8">transpiled</label>
-<br>
-<textarea id="transpiled_8" rows="10" cols="70" placeholder="transpiled"  readonly style="background-color:whitesmoke;">
+<p class="temptranspiledlabel">transpiled:</p>
+<textarea id="transpiled_8" class=tempoutputfield rows="10" cols="70" placeholder="transpiled" >
 </textarea>
-<br>
-<br>
-<p id="status_8" > READY </p>
+<p id="status_8" class="tempstatus"> READY </p>
 
 <!-- ...................... -->
-<br>
-<label for="grammar_9">lisp:</label>
-<br>
-<textarea id="grammar_9" rows="10" cols="70" placeholder="grammar" style="background-color:oldlace;">
+<p class="tempgrammarlabel">lisp:</p>
+<textarea id="grammar_9" rows="10" cols="70" placeholder="grammar" class=tempinputfield>
 emitter {
   stream = token+
   token =   nilgroup | group | endgroup
@@ -1021,10 +989,8 @@ emitter {
 
 </textarea>
 
-<br>
-<label for="semantics_9">semantics:</label>
-<br>
-<textarea id="semantics_9" rows="10" cols="70" placeholder="semantics" style="background-color:oldlace;">
+<p class="tempsemanticslabel">semantics:</p>
+<textarea id="semantics_9" rows="10" cols="70" placeholder="semantics" class="tempinputfield">
   stream [@t] = [[(${t})]]
   token [t] = [[${t}]]
 
@@ -1089,20 +1055,15 @@ emitter {
   endgroup [c text eol] = [[)]]
 </textarea>
 
-<br>
-<label for="transpiled_9">transpiled</label>
-<br>
-<textarea id="transpiled_9" rows="10" cols="70" placeholder="transpiled"  readonly style="background-color:whitesmoke;">
+<p class="finaltranspiledlabel">transpiled:</p>
+<textarea id="transpiled_9" class="finaloutputfield" rows="10" cols="70" placeholder="transpiled"  >
 </textarea>
-<br>
-<br>
-<p id="status_9" > READY </p>
+<p id="status_9" class="finalstatus"> READY </p>
 
 <!-- ...................... -->
 
 
 
-<br>
 <button onclick="generate ()">Generate</button>
 <script src="../common/ohm.js"></script>
 <script src="../common/glue.js"></script>
