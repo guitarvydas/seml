@@ -292,7 +292,7 @@ user-database: [
 </textarea>
 <p>example 3 source:</p>
 <textarea id="source_1" name="source" rows="10" cols="70" placeholder="notation test" class="inputsource">
-    usage: 8:22:45
+    email: jsmith@altscript.com
 </textarea>
 
 <br>
@@ -534,10 +534,12 @@ stringsAndBinary {
   sbToken = binaryBase64 | email | url | path | hypertextTag | otherToken
 
   binaryBase64 = octothorpe hexToken
-  email = identToken at identToken
+  email = identToken at identToken emailTail?
   hypertextTag = lt identToken gt
   path = percent identToken
   url = identToken colon slash slash
+
+  emailTail = dot identToken
 
   otherToken =   threeTextToken | twoTextToken | basicToken | zeroTextToken
   threeTextToken = tag subtag? whiteSpace text text text eol
@@ -551,6 +553,7 @@ stringsAndBinary {
 
   octothorpe = "D" "#" spc text eol
   at = "D" "@" spc text eol
+  dot = "D" "." spc text eol
   percent = "D" "%" spc text eol
   lt = "D" "<" spc text eol
   gt = "D" ">" spc text eol
@@ -579,10 +582,12 @@ output[@t] = [[${t}]]
 
 sbToken [t] = [[${t}]]
 binaryBase64 [o h] = [[dB ${h}\n]]
-email [id1 at id2] = [[d@ ${id1} ${id2}\n]]
+email [id1 at id2 @tail] = [[d@ ${id1} ${id2} ${tail}\n]]
 hypertextTag [lt id gt] =[[d< ${id}\n]]
 path [p id] = [[d% ${id}\n]]
 url [id c s1 s2] = [[dU ${id}\n]]
+
+emailTail [dot id] = [[${id}]]
 
 otherToken [t] = [[${t}]]
 threeTextToken [t @s ws t1 t2 t3 eol] = [[${t}${s} ${t1} ${t2} ${t3}\n]]
@@ -595,6 +600,7 @@ hexToken [t ws t1 eol] = [[${t} ${t1}\n]]
 
 octothorpe [d dot spc text eol] = [[]]
 at [d dot spc text eol] = [[]]
+dot [d dot spc text eol] = [[]]
 percent [d dot spc text eol] = [[]]
 lt [d dot spc text eol] = [[]]
 gt [d dot spc text eol] = [[]]
@@ -990,7 +996,7 @@ emitter {
   hhmmss = "cH" stext stext stext eol
 
   binaryBase64 = "dB" stext eol
-  email = "d@" setext setext eol
+  email = "d@" setext setext setext? eol
   url = "dU" setext eol
   path = "d%" setext eol
   hypertextTag = "d<" setext eol
@@ -1067,7 +1073,7 @@ emitter {
     [[ (hhmmss ${text} ${text2} ${text3}) ]]
 
   binaryBase64 [tag text eol] = [[ (bin64 ${text}) ]]
-  email [tag text text2 eol] = [[ (email ${text} ${text2}) ]]
+  email [tag text text2 domain eol] = [[ (email "${text}" "${text2}" "${domain}") ]]
   url [tag text eol] = [[ (url ${text}) ]]
   path [tag text eol] = [[ (path ${text}) ]]
   hypertextTag [tag text eol] = [[ (hypertext-tag ${text}) \n]]
