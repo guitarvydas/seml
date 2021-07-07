@@ -1,0 +1,15 @@
+user-database: [
+  {
+    name: "John Smith"
+    age:  22
+    born: 1998-8-15
+    usage: 8:22:45
+    email: jsmith@altscript.com
+    website: http://altscript.com
+    version: 3.2.14
+    passhash: #A94A8FE5CCB19BA6
+    colors: [ 255.100.50 50.50.80 ]
+    allow: [ login admin upload edit ]
+    check: [ if age > 60 [ add-to people.seniors ]]
+  }
+]
