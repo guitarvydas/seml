@@ -292,7 +292,7 @@ user-database: [
 </textarea>
 <p>example 3 source:</p>
 <textarea id="source_1" name="source" rows="10" cols="70" placeholder="notation test" class="inputsource">
-    email: jsmith@altscript.com
+    website: http://altscript.com
 </textarea>
 
 <br>
@@ -306,6 +306,88 @@ user-database: [
 
 
 
+
+
+
+<p class="tempgrammarlabel">pre whitespace:</p>
+<textarea id="grammar_1a" name="a" rows="10" cols="70" placeholder="grammar" class="tempinputfield">
+prews {
+  output = asonToken+
+  asonToken = colonSlashSlashTokenPattern | ws | comment | token
+
+
+
+colonSlashSlashTokenPattern = tcolon tslash tslash tnotWS*
+
+tcolon = "D:" spc ":" eol
+tslash = "D/" spc "/" eol
+tnotWS = ~ws tnotWStoken
+tnotWStoken = tag subtag? whiteSpace text? eol
+
+  ws = "W" spc text eol
+  comment = "C" spc text eol
+  token =  tag subtag? whiteSpace text? eol
+
+  tag = "A" | "S" | "I" | "M" | "H" | "U" | "N" | "D"
+  subtag =   "[" | "]" | "{" | "}" | "(" | ")"
+           | "/" | "." | ":" | "@" | "#" | "-" | "+" | "$" | "<" | ">"
+  
+  text = textChar+
+  textChar = ~eol whiteSpace* any
+  eol = "\n"+
+  spc = whiteSpace
+  whiteSpace = " " | "\t"
+}
+</textarea>
+
+<p class="tempsemanticslabel">pre whitespace semantics:</p>
+<textarea id="semantics_1a" rows="10" cols="70" placeholder="semantics" class="tempinputfield">
+
+  output [@a] = [[${a}]]
+  asonToken [t] = [[${t}]]
+
+token [tag @subtag ws @text _eol] = [[${tag}${subtag} ${text}${_eol}]]
+ws [tag s text _eol] = [[${tag}${s}${text}${_eol}]]
+comment [tag s text _eol] = [[${tag}${s}${text}${_eol}]]
+
+text [@t] = [[${t}]]
+textChar [@ws c] = [[${c}]]
+eol [@c] = [[${c}]]
+spc [c] = [[${c}]]
+whiteSpace [c] = [[${c}]]
+
+tag [c] = [[${c}]]
+subtag [c] = [[${c}]]
+
+colonSlashSlashTokenPattern [colon sl1 sl2 @notWS] =
+[[
+D: :
+D/ /
+D/ /
+B ${notWS}
+W ${encodeURIComponent("\n")}
+]]
+
+tcolon [tag sp colon nl] = [[${tag}${sp}${colon}${nl}]]
+tslash [tag sp sl nl] = [[${tag}${sp}${sl}${nl}]]
+tnotWS [t] = [[${t}]]
+tnotWStoken [tag @subtag whitesp @text eol] = [[${text}]]
+
+
+</textarea>
+
+<p class="temptranspiledlabel">pre whitespace transpiled:</p>
+<textarea id="transpiled_1a" name="transpiled" rows="10" cols="70" placeholder="transpiled"  readonly class="tempoutputfield">
+</textarea>
+<p id="status_1a" class="tempstatus"> READY </p>
+
+<!-- ...................... -->
+
+
+
+
+
+
 <p class="tempgrammarlabel">kill whitespace:</p>
 <textarea id="grammar_2" name="a" rows="10" cols="70" placeholder="grammar" class="tempinputfield">
 killws {
@@ -316,7 +398,7 @@ killws {
   comment = "C" spc text eol
   token =  tag subtag? whiteSpace text? eol
 
-  tag = "A" | "S" | "I" | "M" | "H" | "U" | "N" | "D"
+  tag = "A" | "S" | "I" | "M" | "H" | "U" | "N" | "D" | "B"
   subtag =   "[" | "]" | "{" | "}" | "(" | ")"
            | "/" | "." | ":" | "@" | "#" | "-" | "+" | "$" | "<" | ">"
   
@@ -377,7 +459,7 @@ numericalValues {
   comma = "D" "," spc text eol
   x = "N" spc "x" eol
 
-  tag = "A" | "S" | "I" | "M" | "H" | "U" | "N" | "D"
+  tag = "A" | "S" | "I" | "M" | "H" | "U" | "N" | "D" | "B"
   subtag =   "[" | "]" | "{" | "}" | "(" | ")"
            | "/" | "." | ":" | "@" | "#" | "-" | "+" | "$" | "<" | ">"
   
@@ -465,7 +547,7 @@ dates {
   comma = "D" "," spc text eol
   x = "N" spc "x" eol
 
-  tag = "A" | "S" | "I" | "M" | "H" | "U" | "N" | "D"
+  tag = "A" | "S" | "I" | "M" | "H" | "U" | "N" | "D" | "B"
   subtag =   "[" | "]" | "{" | "}" | "(" | ")"
            | "/" | "." | ":" | "@" | "#" | "-" | "+" | "$" | "<" | ">"
 
@@ -537,7 +619,7 @@ stringsAndBinary {
   email = identToken at identToken emailTail?
   hypertextTag = lt identToken gt
   path = percent identToken
-  url = identToken colon slash slash
+  url = identToken colon slash slash tblob
 
   emailTail = dot identToken
 
@@ -560,8 +642,9 @@ stringsAndBinary {
   slash = "D" "/" spc text eol
   colon = "D" ":" spc text eol
   identToken = "N" spc text eol
+  tblob = "B" spc text eol
 
-  tag = "A" | "S" | "I" | "M" | "H" | "U" | "N" | "D" | "b" | "c"
+  tag = "A" | "S" | "I" | "M" | "H" | "U" | "N" | "D" | "b" | "c" | "B"
   subtag =   "[" | "]" | "{" | "}" | "(" | ")"
            | "/" | "." | ":" | "@" | "#" | "-" | "+" | "$" | "<" | ">"
            | "P" | "R" | "T" | "$" | "E" | "F"
@@ -585,7 +668,7 @@ binaryBase64 [o h] = [[dB ${h}\n]]
 email [id1 at id2 @tail] = [[d@ ${id1} ${id2} ${tail}\n]]
 hypertextTag [lt id gt] =[[d< ${id}\n]]
 path [p id] = [[d% ${id}\n]]
-url [id c s1 s2] = [[dU ${id}\n]]
+url [id c s1 s2 blob] = [[dU ${id} ${blob}\n]]
 
 emailTail [dot id] = [[${id}]]
 
@@ -607,6 +690,7 @@ gt [d dot spc text eol] = [[]]
 slash [d dot spc text eol] = [[]]
 colon [d dot spc text eol] = [[]]
 identToken [d spc text eol] = [[${text}]]
+tblob [d spc text eol] = [[${text}]]
 
 
 tag [c] = [[${c}]]
@@ -654,7 +738,7 @@ negnum {
   slash = "D" "/" spc text eol
   squote = "D" "'" spc text eol
   
-  tag = "A" | "S" | "I" | "M" | "H" | "U" | "N" | "D" | "b" | "c" | "d"
+  tag = "A" | "S" | "I" | "M" | "H" | "U" | "N" | "D" | "b" | "c" | "d" | "B"
   subtag =   "[" | "]" | "{" | "}" | "(" | ")"
            | "/" | "." | ":" | "@" | "#" | "-" | "+" | "$" | "<" | ">"
            | "P" | "R" | "T" | "$" | "E" | "F"
@@ -765,7 +849,7 @@ words {
   slash = "D" "/" spc text eol
   squote = "D" "'" spc text eol
   
-  tag = "A" | "S" | "I" | "M" | "H" | "U" | "N" | "D" | "b" | "c" | "d"
+  tag = "A" | "S" | "I" | "M" | "H" | "U" | "N" | "D" | "b" | "c" | "d" | "B"
   subtag =   "[" | "]" | "{" | "}" | "(" | ")"
            | "/" | "." | ":" | "@" | "#" | "-" | "+" | "$" | "<" | ">"
            | "P" | "R" | "T" | "$" | "E" | "F"
@@ -868,7 +952,7 @@ expr {
   endTag = space | eol | end
 
   tagcode = basicTag | numericalTag | dateTag | stringsTag | wordsTag
-  basicTag = delimiterTag | "H" | "N" | "I" | "W" | "S" | "M" | "C" | "U"
+  basicTag = delimiterTag | "H" | "N" | "I" | "W" | "S" | "M" | "C" | "U" | "B"
   delimiterTag =  "D[" | "D]" | "D{" | "D}" | "D(" | "D)"
                 | "D/" | "D." | "D:" | "D@" | "D#" | "D-" 
 		| "D+" | "D$" | "D<" | "D>"  
@@ -997,7 +1081,7 @@ emitter {
 
   binaryBase64 = "dB" stext eol
   email = "d@" setext setext setext? eol
-  url = "dU" setext eol
+  url = "dU" setext setext eol
   path = "d%" setext eol
   hypertextTag = "d<" setext eol
 
@@ -1074,7 +1158,7 @@ emitter {
 
   binaryBase64 [tag text eol] = [[ (bin64 ${text}) ]]
   email [tag text text2 domain eol] = [[ (email "${text}" "${text2}" "${domain}") ]]
-  url [tag text eol] = [[ (url ${text}) ]]
+  url [tag text blobtext eol] = [[ (url "${text}" "${blobtext}") ]]
   path [tag text eol] = [[ (path ${text}) ]]
   hypertextTag [tag text eol] = [[ (hypertext-tag ${text}) \n]]
 
@@ -1149,8 +1233,28 @@ emitter {
        }	   
   }
 
-  function generate_killws () {
+  function generate_prews () {
       let notationSource = document.getElementById('transpiled_1').value;
+      let scnGrammar = document.getElementById('grammar_1a').value;
+      let semantics = document.getElementById('semantics_1a').value;
+      let generatedSCNSemantics = transpiler (semantics, glueGrammar, "_glue", glueSemantics);
+
+      _ruleInit();
+      try {
+	  document.getElementById('status_1a').innerHTML = "FAILED";
+	  let semObject = eval('(' + generatedSCNSemantics + ')');
+	  document.getElementById ("transpiled_2").value = semObject;
+	  let tr = transpiler(notationSource, scnGrammar, "_glue", semObject);
+	  document.getElementById('transpiled_1a').value = tr;
+	  document.getElementById('status_1a').innerHTML = "OK";
+      }
+       catch (err) {
+	  document.getElementById('status_1a').innerHTML = err;
+       }	   
+  }
+
+  function generate_killws () {
+      let notationSource = document.getElementById('transpiled_1a').value;
       let scnGrammar = document.getElementById('grammar_2').value;
       let semantics = document.getElementById('semantics_2').value;
       let generatedSCNSemantics = transpiler (semantics, glueGrammar, "_glue", glueSemantics);
@@ -1308,6 +1412,7 @@ emitter {
 
   function generate () {
       generate_tokens ();
+      generate_prews ();
       generate_killws ();
       generate_numerical ();
       generate_dates ();
