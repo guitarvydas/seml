@@ -53,17 +53,17 @@
 <textarea id="grammar_1" name="a" rows="10" cols="70" placeholder="grammar" class="tempinputfield">
 asonToken {
   output = asonToken+
-  asonToken = comment | string | delimiter | integer | namedMonth | hex | ws | unknown | ident
+  asonToken = comment | string | hex | delimiter | integer | namedMonth | ws | unknown | ident
 
   unknown = "?" "?" "?"
 
-  hex = "#" hedig+
+  hex = "#" hexdig+
 
   ident = ~namedMonth ident1 identFollow*
   ident1 = "a" .. "z" | "A" .. "Z"
-  identFollow = "0" .. "9" | "_" | ident1
+  identFollow = "-" | "0" .. "9" | "_" | ident1
 
-  delimiter = da | db | dc | dd | de | df | dg
+  delimiter =   da | db | dc | dd | de | df | dg
               | dh | di | dj | dk | dl | dm | dn | do | dp
 	      
   da = "["
@@ -85,7 +85,7 @@ asonToken {
 
   integer = decimalDigit+
   decimalDigit = "0" .. "9"
-  hedig = "A" .. "F" | decimalDigit
+  hexdig = "A" .. "F" | decimalDigit
 
   comment = ";" anyToEol
   anyToEol = commentChar* eol
@@ -171,6 +171,7 @@ ident1 [c] = [[${encodeURIComponent(c)}]]
 identFollow [c] = [[${encodeURIComponent(c)}]]
 
 delimiter [d] = [[${d}]]
+
 da [c] = [[D[ []]
 db [c] = [[D${c} ${c}]]
 dc [c] = [[D{ {]]
@@ -190,7 +191,7 @@ dp [c] = [[D+ +]]
 
 integer [@d] = [[I ${encodeURIComponent(d)}]]
 decimalDigit [c] = [[${encodeURIComponent(c)}]]
-hedig [c] = [[${encodeURIComponent(c)}]]
+hexdig [c] = [[${encodeURIComponent(c)}]]
 ws [@s] = [[W ${encodeURIComponent(s)}]]
 wsChar [c] = [[${encodeURIComponent(c)}]]
 string [lq @cs rq] = [[S ${encodeURIComponent(lq + cs + rq)}]]
@@ -292,7 +293,22 @@ user-database: [
 </textarea>
 <p>example 3 source:</p>
 <textarea id="source_1" name="source" rows="10" cols="70" placeholder="notation test" class="inputsource">
+user-database: [
+  {
+    name: "John Smith"
+    age:  22
+    born: 1998-7-15
+    bornagain: 1998-july-15
+    usage: 8:22:45
+    email: jsmith@altscript.com
     website: http://altscript.com
+    version: 3.2.14
+    passhash: #A94A8FE5CCB19BA6
+    colors: [ 255.100.50 50.50.80 ]
+    allow: [ login admin upload edit ]
+    check: [ if age > 60 [ add-to people.seniors ]]
+  }
+]
 </textarea>
 
 <br>
@@ -1040,21 +1056,20 @@ g defineWord
 <textarea id="grammar_9" rows="10" cols="70" placeholder="grammar" class=tempinputfield>
 emitter {
   stream = token+
-  token =   groupingToken | nonGroupingToken
-  groupingToken =   nilgroup | definewordgroup | group | endgroup 
-  nonGroupingToken = 
-            ~groupingToken (
-            pair | range | tuple | currency 
+  token =   nilgroup | definewordgroup | group | endgroup 
+          | pair | range | tuple | currency 
           | yyyymmddhhmmsstz |  yyyymmddhhmmss | yyyymmdd | mmdd | hhmmss
 	  | binaryBase64 | email | url | path | hypertextTag
 	  | getUnevalField | setfield | selectField | pathRefinement | literal | symbol | refinement | selector | getword | useword
 	  | lbracket | rbracket | lbrace | rbrace | lpar | rpar
           | float | eufloat
-          | string | delimiter | integer | namedMonth | hex | ws | unknown | ident )
+          | string | delimiter | integer | namedMonth | hex | ws | unknown | ident
 
-  nilgroup = "G" stext spc "nil" eol nonGroupingToken+ endgroup
-  definewordgroup = ~nilgroup "G" spc "defineWord" stext eol nonGroupingToken+ endgroup
-  group = ~nilgroup ~definewordgroup "G" stext stext eol nonGroupingToken+ endgroup
+  notEndGroupToken = ~endgroup token
+
+  nilgroup = "G" stext spc "nil" eol notEndGroupToken+ endgroup
+  definewordgroup = ~nilgroup "G" spc "defineWord" stext eol notEndGroupToken+ endgroup
+  group = ~nilgroup ~definewordgroup "G" stext stext eol notEndGroupToken+ endgroup
   endgroup = "g" stext eol
   
   string = "S" setext eol
@@ -1126,8 +1141,7 @@ emitter {
 <textarea id="semantics_9" rows="10" cols="70" placeholder="semantics" class="tempinputfield">
   stream [@t] = [[(${t})]]
   token [t] = [[${t}]]
-  groupingToken [t] = [[${t}]]
-  nonGroupingToken [t] = [[${t}]]
+  notEndGroupToken [t] = [[${t}]]
 
   string [tag text eol] = [[ (ason-string ${text}) ]]
   delimiter [tag subTag text eol] = [[ #\\${subTag} ]]
