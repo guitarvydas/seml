@@ -13,9 +13,10 @@ textarea {
 
 <br>
 <label for="grammar">grammar:</label>
+<br>
 <textarea id="grammar" name="a" rows="10" cols="70" placeholder="grammar" style="background-color:oldlace;">
 Arithmetic {
-  /* Python code emitter */
+  /* SCN (Solution Centric Notation - mini-DSL) for arithmetic pseudo-code to WASM */
   
   Top = Exp
   
@@ -52,37 +53,46 @@ Arithmetic {
 }
 </textarea>
 
+<br>
 <label for="semantics">semantics:</label>
+<br>
 <textarea id="semantics" rows="10" cols="70" placeholder="semantics" style="background-color:oldlace;">
-
-  Top [e] = [[
-    print(${e});
+  Top [e] =
+  [[
+(module
+  (func $custom (param $x f64) (param $y f64) (result f64)
+${e})
+  (export "custom" (func $custom))
+)
     ]]
   Exp [e] = [[${e}]]
-  AddExp_plus [e1 op e2] = [[${e1}+${e2}]]
-  AddExp_minus [e1 op e2] = [[${e1}-${e2}]]
+  AddExp_plus [e1 op e2] = [[${e1}\n${e2}\nf64.add\n]]
+  AddExp_minus [e1 op e2] = [[${e1}\n${e2}\nf64.sub\n]]
   AddExp [e] = [[${e}]]
-  MulExp_times [e1 op e2] = [[${e1}*${e2}]]
-  MulExp_divide [e1 op e2] = [[${e1}/${e2}]]
+  MulExp_times [e1 op e2] = [[${e1}\n${e2}\nf64.mul\n]]
+  MulExp_divide [e1 op e2] = [[${e1}\n${e2}\nf64.div\n]]
   MulExp [e] = [[${e}]]
-  ExpExp_power[p op e] = [[${p}^${e}]]
+  ExpExp_power[p op e] = [[(???exp ${p} ${e})]]
   ExpExp [p] = [[${p}]]
-  PriExp_paren [lp p rp] = [[(${p})]]
-  PriExp_pos [sign p] = [[+${p}]]
-  PriExp_neg [sign p] = [[-${p}]]
+  PriExp_paren [lp p rp] = [[${p}]]
+  PriExp_pos [sign p] = [[${p}]]
+  PriExp_neg [sign p] = [[${p}\nf64.neg]]
   PriExp [p] = [[${p}]]
-  ident [l @a] = [[${l}${a}]]
-  number_fract [@numerator dot @denominator] = [[${numerator}.${denominator}]]
-  number_whole [@n] = [[${n}]]
+  ident [l @a] = [[local.get \$${l}${a}]]
+  number_fract [@numerator dot @denominator] = [[f64.const ${numerator}.${denominator}]]
+  number_whole [@n] = [[f64.const ${n}]]
 </textarea>
 
 <br>
 <label for="source">source</label>
+<br>
 <textarea id="source" name="source" rows="10" cols="70" placeholder="notation test" style="background-color:oldlace;">
 2+3
 </textarea>
 
+<br>
 <label for="transpiled">transpiled</label>
+<br>
 <textarea id="transpiled" name="transpiled" rows="10" cols="70" placeholder="transpiled"  readonly style="background-color:whitesmoke;">
 </textarea>
 <br>
@@ -91,9 +101,9 @@ Arithmetic {
 
 <br>
 <button onclick="generate ()">Generate</button>
-<script src="ohm.js"></script>
-<script src="glue.js"></script>
-<script src="scope.js"></script>
+<script src="../common/ohm.js"></script>
+<script src="../common/glue.js"></script>
+<script src="../common/scope.js"></script>
 <script id='generated'></script>
 <script>
 

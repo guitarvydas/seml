@@ -269,6 +269,6 @@ function transpiler (scnText, grammar, semOperation, semanticsObject) {
 	}
     }
     catch (err) {
-	throw err.message.substring(1,255);
+	throw err;
     }
 }

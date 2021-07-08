@@ -11,10 +11,10 @@ function scopeStack () {
 	this._top ().push ({key: key, val: val});
     };
     this._lookup = function (key, a) { 
-      return a.find (obj => {return obj && obj.key && (obj.key == key)}); };
+	return a.find (obj => {return obj && obj.key && (obj.key === key)}); };
     this.scopeGet = function (key) {
 	var i = this._topIndex ();
-	for (; i > 0 ; i -= 1) {
+	for (; i >= 0 ; i -= 1) {
 	    var obj = this._lookup (key, this._stack [i]);
 	    if (obj) {
 		return obj.val;
@@ -23,12 +23,11 @@ function scopeStack () {
         console.log ('*** scopeGet error ' + key + ' ***');
 	console.log (this._stack);
 	console.log (key);
-        process.exit (1);
-	//throw "scopeGet internal error ";
+	throw "scopeGet internal error - can't find /" + key + "/";
     };
     this.scopeModify = function (key, val) {
 	var i = this._topIndex ();
-	for (; i > 0 ; i -= 1) {
+	for (; i >= 0 ; i -= 1) {
 	    var obj = this._lookup (key, this._stack [i]);
 	    if (obj) {
               obj.val = val;
@@ -50,8 +49,8 @@ function scopeModify (key, val) {
   return _scope.scopeModify (key, val);
 }
 
-function scopeGet (key, val) {
-  return _scope.scopeGet (key, val);
+function scopeGet (key) {
+  return _scope.scopeGet (key);
 }
 
 function _ruleInit () {

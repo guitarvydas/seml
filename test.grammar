@@ -1,4 +1,0 @@
-arith{
-  top = expr
-  expr = d "+" d
-}
